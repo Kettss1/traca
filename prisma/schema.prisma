@@ -1,0 +1,414 @@
+// Prisma schema for LerTraça
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =============================================================================
+// AUTH (NextAuth.js v5)
+// =============================================================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("account")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_token")
+}
+
+// =============================================================================
+// CORE ENTITIES
+// =============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime? @map("email_verified")
+  passwordHash  String?   @map("password_hash")
+  username      String?   @unique
+  name          String?
+  image         String?   // Required by NextAuth adapter (Google profile pic)
+  bio           String?
+  avatarUrl     String?   @map("avatar_url")
+  quote         String?
+  musicUrl      String?   @map("music_url")
+  socialLinks   Json?     @map("social_links") // { instagram, reddit, tiktok }
+  points        Int       @default(0) // Total points earned
+  coins         Int       @default(0) // Currency for unlocking themes
+
+  themeId String? @map("theme_id")
+  theme   Theme?  @relation(fields: [themeId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  accounts     Account[]
+  sessions     Session[]
+  userBooks    UserBook[]
+  feedPosts    FeedPost[]
+  comments     Comment[]
+  likes        Like[]
+  readingGoals ReadingGoal[]
+
+  // Social relations
+  followers     Follow[]       @relation("Following")
+  following     Follow[]       @relation("Followers")
+  notifications Notification[] @relation("UserNotifications")
+  actorOf       Notification[] @relation("ActorNotifications")
+
+  // Gamification relations
+  achievements UserAchievement[]
+  pointsLogs   PointsLog[]
+
+  @@map("user")
+}
+
+model Book {
+  id             String   @id @default(cuid())
+  title          String
+  subtitle       String?
+  synopsis       String?  @db.Text
+  authors        String[] // Array of author names
+  publisher      String?
+  publishedDate  String?  @map("published_date")
+  pageCount      Int?     @map("page_count")
+  isbn10         String?  @map("isbn_10")
+  isbn13         String?  @map("isbn_13")
+  coverUrl       String?  @map("cover_url")
+  categories     String[] // Array of category names
+  colorPrimary   String?  @map("color_primary") // Hex color from cover
+  colorSecondary String?  @map("color_secondary") // Hex color from cover
+  googleBooksId  String?  @unique @map("google_books_id")
+  openLibraryKey String?  @unique @map("open_library_key")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  userBooks UserBook[]
+
+  @@map("book")
+}
+
+enum ReadingStatus {
+  WANT_TO_READ
+  READING
+  READ
+  ABANDONED
+}
+
+model UserBook {
+  id               String        @id @default(cuid())
+  userId           String        @map("user_id")
+  bookId           String        @map("book_id")
+  status           ReadingStatus @default(WANT_TO_READ)
+  rating           Float? // 0.5 to 5 in 0.5 increments
+  currentPage      Int?          @map("current_page")
+  acquisitionDate  DateTime?     @map("acquisition_date")
+  acquisitionValue Float?        @map("acquisition_value")
+  startDate        DateTime?     @map("start_date")
+  finishDate       DateTime?     @map("finish_date")
+  shelfPosition    Int?          @map("shelf_position")
+  isReread         Boolean       @default(false) @map("is_reread")
+  rereadOfId       String?       @map("reread_of_id")
+  tags             String[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book        Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  rereadOf    UserBook?   @relation("Rereads", fields: [rereadOfId], references: [id])
+  rereads     UserBook[]  @relation("Rereads")
+  annotations Annotation[]
+  readingLogs ReadingLog[]
+  feedPosts   FeedPost[]
+
+  @@unique([userId, bookId, isReread, createdAt]) // Allow multiple rereads
+  @@map("user_book")
+}
+
+enum AnnotationType {
+  NOTE
+  QUOTE
+}
+
+model Annotation {
+  id         String         @id @default(cuid())
+  userBookId String         @map("user_book_id")
+  type       AnnotationType
+  content    String         @db.Text
+  pageNumber Int?           @map("page_number")
+  deletedAt  DateTime?      @map("deleted_at") // Soft delete
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@map("annotation")
+}
+
+model ReadingLog {
+  id         String   @id @default(cuid())
+  userBookId String   @map("user_book_id")
+  date       DateTime @db.Date
+  pagesRead  Int      @map("pages_read")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  userBook UserBook @relation(fields: [userBookId], references: [id], onDelete: Cascade)
+
+  @@unique([userBookId, date])
+  @@map("reading_log")
+}
+
+model ReadingGoal {
+  id          String @id @default(cuid())
+  userId      String @map("user_id")
+  year        Int
+  targetBooks Int    @map("target_books")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, year])
+  @@map("reading_goal")
+}
+
+// =============================================================================
+// SOCIAL
+// =============================================================================
+
+model Follow {
+  followerId  String @map("follower_id")
+  followingId String @map("following_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  follower  User @relation("Followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@map("follow")
+}
+
+enum FeedPostType {
+  STARTED
+  FINISHED
+  ABANDONED
+  REVIEW
+  QUOTE_SHARED
+}
+
+model FeedPost {
+  id         String       @id @default(cuid())
+  userId     String       @map("user_id")
+  type       FeedPostType
+  userBookId String?      @map("user_book_id")
+  content    String?      @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userBook      UserBook?      @relation(fields: [userBookId], references: [id], onDelete: SetNull)
+  comments      Comment[]
+  likes         Like[]
+  notifications Notification[]
+
+  @@map("feed_post")
+}
+
+model Comment {
+  id         String @id @default(cuid())
+  feedPostId String @map("feed_post_id")
+  userId     String @map("user_id")
+  content    String @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  feedPost FeedPost @relation(fields: [feedPostId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comment")
+}
+
+model Like {
+  id         String @id @default(cuid())
+  feedPostId String @map("feed_post_id")
+  userId     String @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  feedPost FeedPost @relation(fields: [feedPostId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([feedPostId, userId])
+  @@map("like")
+}
+
+enum NotificationType {
+  NEW_FOLLOWER
+  POST_LIKED
+  POST_COMMENTED
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  actorId   String           @map("actor_id") // Who triggered the notification
+  postId    String?          @map("post_id")
+  read      Boolean          @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user  User      @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  actor User      @relation("ActorNotifications", fields: [actorId], references: [id], onDelete: Cascade)
+  post  FeedPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("notification")
+}
+
+// =============================================================================
+// THEMES
+// =============================================================================
+
+model Theme {
+  id              String  @id @default(cuid())
+  name            String  @unique
+  shelfStyle      String? @map("shelf_style")
+  backgroundUrl   String? @map("background_url")
+  isDefault       Boolean @default(false) @map("is_default")
+  unlockCondition String? @map("unlock_condition") // Achievement ID or points threshold
+  coinsCost       Int?    @map("coins_cost") // Cost in coins to unlock
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  users User[]
+
+  @@map("theme")
+}
+
+// =============================================================================
+// GAMIFICATION
+// =============================================================================
+
+model Achievement {
+  id          String  @id @default(cuid())
+  code        String  @unique // Unique identifier like "FIRST_BOOK", "SPEED_READER"
+  name        String // Display name
+  description String
+  icon        String // Icon name or emoji
+  category    String // "reading", "social", "collection", "streak"
+  points      Int     @default(0) // Points awarded when earned
+  coins       Int     @default(0) // Coins awarded when earned
+  requirement Json // JSON with achievement requirements
+  isSecret    Boolean @default(false) @map("is_secret") // Hidden until earned
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  users UserAchievement[]
+
+  @@map("achievement")
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  achievementId String   @map("achievement_id")
+  progress      Int      @default(0) // Progress towards achievement (0-100 or count)
+  earnedAt      DateTime? @map("earned_at") // Null if not yet earned
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@map("user_achievement")
+}
+
+enum PointsAction {
+  BOOK_ADDED
+  BOOK_FINISHED
+  BOOK_RATED
+  BOOK_REVIEWED
+  ANNOTATION_CREATED
+  QUOTE_SHARED
+  FIRST_FOLLOWER
+  ACHIEVEMENT_EARNED
+  DAILY_LOGIN
+  STREAK_BONUS
+}
+
+model PointsLog {
+  id          String       @id @default(cuid())
+  userId      String       @map("user_id")
+  action      PointsAction
+  points      Int
+  description String?
+  referenceId String?      @map("reference_id") // ID of related entity (book, achievement, etc.)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("points_log")
+}

@@ -1,9 +1,9 @@
-import { BookIcon } from "@phosphor-icons/react";
+import { Book as BookIcon } from '@phosphor-icons/react/dist/ssr'
 
 export default function TracaIcon() {
   return (
-    <div className="flex items-center justify-center p-2 w-fit bg-green-deep text-cream rounded-xl">
+    <div className="bg-green-deep text-cream flex w-fit items-center justify-center rounded-xl p-2">
       <BookIcon size={32} />
     </div>
-  );
+  )
 }

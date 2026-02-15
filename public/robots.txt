@@ -1,0 +1,18 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow authenticated pages
+Disallow: /shelf
+Disallow: /feed
+Disallow: /stats
+Disallow: /achievements
+Disallow: /settings
+Disallow: /api/
+
+# Allow public pages
+Allow: /profile/
+Allow: /book/
+
+# Sitemap
+Sitemap: https://lertraca.com.br/sitemap.xml
