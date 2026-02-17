@@ -17,6 +17,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
   session: { strategy: 'jwt' },
+  callbacks: {
+    ...authConfig.callbacks,
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        token.username = user.username
+      }
+      // Refresh username from DB if missing (OAuth users get it auto-generated)
+      if (!token.username && token.id) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { username: true },
+        })
+        if (dbUser?.username) {
+          token.username = dbUser.username
+        }
+      }
+      return token
+    },
+  },
   events: {
     async createUser({ user }) {
       // Auto-generate username for OAuth users (e.g. Google)
