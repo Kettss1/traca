@@ -50,6 +50,22 @@ const nextConfig: NextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
           },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
         ],
       },
       {

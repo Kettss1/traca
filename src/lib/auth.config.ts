@@ -13,7 +13,11 @@ export const authConfig = {
         nextUrl.pathname.startsWith('/shelf') ||
         nextUrl.pathname.startsWith('/stats') ||
         nextUrl.pathname.startsWith('/feed') ||
-        nextUrl.pathname.startsWith('/settings')
+        nextUrl.pathname.startsWith('/settings') ||
+        nextUrl.pathname.startsWith('/book/') ||
+        nextUrl.pathname.startsWith('/achievements') ||
+        nextUrl.pathname.startsWith('/search') ||
+        nextUrl.pathname.startsWith('/retrospective')
 
       if (isOnProtectedRoute) {
         if (isLoggedIn) return true

@@ -1,13 +1,28 @@
 import { NextResponse } from 'next/server'
-import { searchBooks as searchGoogleBooks, type SearchMode } from '@/lib/api/google-books'
+import { z } from 'zod'
+import { searchBooks as searchGoogleBooks } from '@/lib/api/google-books'
 import { searchBooks as searchOpenLibrary } from '@/lib/api/open-library'
+
+const searchSchema = z.object({
+  q: z.string().min(1).max(200),
+  mode: z.enum(['title', 'author']).default('title'),
+})
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const query = searchParams.get('q')
-  const mode = (searchParams.get('mode') || 'title') as SearchMode
 
-  if (!query || query.trim().length < 3) {
+  const parsed = searchSchema.safeParse({
+    q: searchParams.get('q'),
+    mode: searchParams.get('mode') || 'title',
+  })
+
+  if (!parsed.success) {
+    return NextResponse.json({ results: [] })
+  }
+
+  const { q: query, mode } = parsed.data
+
+  if (query.trim().length < 3) {
     return NextResponse.json({ results: [] })
   }
 

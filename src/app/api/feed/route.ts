@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { auth } from '@/lib/auth'
 import { getFeedPosts } from '@/lib/services/feed'
+
+const feedSchema = z.object({
+  type: z.enum(['home', 'global', 'user']).default('home'),
+  cursor: z.string().optional(),
+  userId: z.string().optional(),
+})
 
 export async function GET(request: Request) {
   const session = await auth()
@@ -10,14 +17,23 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url)
-  const type = searchParams.get('type') as 'home' | 'global' | 'user' || 'home'
-  const cursor = searchParams.get('cursor') || undefined
-  const targetUserId = searchParams.get('userId') || undefined
+
+  const parsed = feedSchema.safeParse({
+    type: searchParams.get('type') || 'home',
+    cursor: searchParams.get('cursor') || undefined,
+    userId: searchParams.get('userId') || undefined,
+  })
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Parâmetros inválidos' }, { status: 400 })
+  }
+
+  const { type, cursor, userId } = parsed.data
 
   try {
     const result = await getFeedPosts(session.user.id, {
       feedType: type,
-      targetUserId,
+      targetUserId: userId,
       cursor,
     })
 

@@ -1,27 +1,48 @@
 import { ImageResponse } from '@vercel/og'
 import { NextRequest } from 'next/server'
+import { z } from 'zod'
 
 export const runtime = 'edge'
+
+const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#4C7052')
+
+const shareCardSchema = z.object({
+  title: z.string().max(200).default('Livro'),
+  author: z.string().max(100).default('Autor'),
+  cover: z.string().url().optional(),
+  rating: z.string().regex(/^[0-5](\.[05])?$/).optional(),
+  color1: hexColor,
+  color2: z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#2D2A26'),
+  format: z.enum(['story', 'feed']).default('story'),
+  user: z.string().max(30).optional(),
+})
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
 
-  // Get parameters
-  const title = searchParams.get('title') || 'Livro'
-  const author = searchParams.get('author') || 'Autor'
-  const coverUrl = searchParams.get('cover') || ''
-  const rating = searchParams.get('rating') || ''
-  const colorPrimary = searchParams.get('color1') || '#4C7052'
-  const colorSecondary = searchParams.get('color2') || '#2D2A26'
-  const format = searchParams.get('format') || 'story' // 'story' (1080x1920) or 'feed' (1080x1080)
-  const username = searchParams.get('user') || ''
+  const parsed = shareCardSchema.safeParse({
+    title: searchParams.get('title') || undefined,
+    author: searchParams.get('author') || undefined,
+    cover: searchParams.get('cover') || undefined,
+    rating: searchParams.get('rating') || undefined,
+    color1: searchParams.get('color1') || undefined,
+    color2: searchParams.get('color2') || undefined,
+    format: searchParams.get('format') || undefined,
+    user: searchParams.get('user') || undefined,
+  })
+
+  if (!parsed.success) {
+    return new Response('Parâmetros inválidos', { status: 400 })
+  }
+
+  const { title, author, cover: coverUrl, rating, color1: colorPrimary, color2: colorSecondary, format, user: username } = parsed.data
 
   const isStory = format === 'story'
   const width = 1080
   const height = isStory ? 1920 : 1080
 
   // Generate stars string
-  const ratingNum = parseFloat(rating)
+  const ratingNum = rating ? parseFloat(rating) : 0
   const fullStars = Math.floor(ratingNum)
   const hasHalfStar = ratingNum % 1 >= 0.5
   const starsDisplay = rating
