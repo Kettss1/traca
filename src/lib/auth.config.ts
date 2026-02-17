@@ -22,10 +22,27 @@ export const authConfig = {
 
       return true
     },
-    jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id
         token.username = user.username
+      }
+      // Refresh username from DB if it's missing (e.g. OAuth user got one auto-generated)
+      if (trigger === 'signIn' || trigger === 'update' || !token.username) {
+        if (token.id) {
+          try {
+            const { db } = await import('@/lib/db')
+            const dbUser = await db.user.findUnique({
+              where: { id: token.id as string },
+              select: { username: true },
+            })
+            if (dbUser?.username) {
+              token.username = dbUser.username
+            }
+          } catch {
+            // Ignore errors in edge runtime
+          }
+        }
       }
       return token
     },

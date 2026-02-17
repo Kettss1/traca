@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { BookOpen, Globe, Books, MagnifyingGlass } from '@phosphor-icons/react'
 import { FeedPostCard } from './feed-post-card'
@@ -58,7 +58,15 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
     }
   }, [inView, hasMore, isLoading, loadMorePosts])
 
+  const isFirstRender = useRef(true)
+
   useEffect(() => {
+    // Skip fetch on initial mount — we already have initialPosts for 'home'
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
     async function loadFeed() {
       setIsLoading(true)
       setPosts([])
@@ -78,9 +86,7 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
       }
     }
 
-    if (feedType !== 'home' || posts.length === 0) {
-      loadFeed()
-    }
+    loadFeed()
   }, [feedType])
 
   return (

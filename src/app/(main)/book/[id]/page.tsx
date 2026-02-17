@@ -197,9 +197,9 @@ export default async function BookPage({ params }: BookPageProps) {
 
           {/* User actions */}
           {userBook && (
-            <div className="mt-6 space-y-4 rounded-lg bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-text-dark text-sm font-medium">Status</span>
+            <div className="mt-6 space-y-4 rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+              <div>
+                <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-text-muted">Status</h3>
                 <StatusSelector
                   userBookId={userBook.id}
                   currentStatus={userBook.status}
@@ -215,16 +215,18 @@ export default async function BookPage({ params }: BookPageProps) {
                 />
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-text-dark text-sm font-medium">Avaliação</span>
-                <RatingStars userBookId={userBook.id} currentRating={userBook.rating} />
+              <div className="border-t border-cream-dark/80 pt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">Avaliação</span>
+                  <RatingStars userBookId={userBook.id} currentRating={userBook.rating} />
+                </div>
               </div>
 
               {totalReads > 1 && <p className="text-text-muted text-sm">{totalReads}ª leitura</p>}
 
               {/* Reread button - only show if book is finished */}
               {userBook.status === 'READ' && (
-                <div className="border-t border-brown/10 pt-4">
+                <div className="border-t border-cream-dark/80 pt-4">
                   <RereadButton userBookId={userBook.id} />
                 </div>
               )}

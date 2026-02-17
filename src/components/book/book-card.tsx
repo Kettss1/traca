@@ -1,8 +1,9 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
-import { BookOpen, Plus, Check, Star, ArrowClockwise } from '@phosphor-icons/react'
+import { BookOpen, Plus, Check, Star, ArrowClockwise, BookmarkSimple, Book, CheckCircle, X } from '@phosphor-icons/react'
 
 type ReadingStatus = 'WANT_TO_READ' | 'READING' | 'READ' | 'ABANDONED'
 
@@ -12,6 +13,13 @@ const STATUS_CONFIG: Record<ReadingStatus, { label: string; className: string }>
   READ: { label: 'Lido', className: 'bg-green-deep/10 text-green-deep' },
   ABANDONED: { label: 'Abandonado', className: 'bg-brown/10 text-text-muted' },
 }
+
+const ADD_STATUS_OPTIONS: { key: ReadingStatus; label: string; icon: typeof BookmarkSimple; color: string }[] = [
+  { key: 'WANT_TO_READ', label: 'Quero Ler', icon: BookmarkSimple, color: 'text-terracotta' },
+  { key: 'READING', label: 'Lendo', icon: BookOpen, color: 'text-green-light' },
+  { key: 'READ', label: 'Lido', icon: CheckCircle, color: 'text-green-deep' },
+  { key: 'ABANDONED', label: 'Abandonado', icon: X, color: 'text-brown' },
+]
 
 export interface BookCardProps {
   title: string
@@ -24,7 +32,7 @@ export interface BookCardProps {
   status?: ReadingStatus
   rating?: number | null
   rereadCount?: number
-  onAdd?: () => void
+  onAdd?: (status: ReadingStatus) => void
   onClick?: () => void
   className?: string
 }
@@ -44,6 +52,20 @@ export function BookCard({
   onClick,
   className,
 }: BookCardProps) {
+  const [showStatusMenu, setShowStatusMenu] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!showStatusMenu) return
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowStatusMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showStatusMenu])
+
   return (
     <div
       className={cn(
@@ -120,31 +142,55 @@ export function BookCard({
           </div>
 
           {onAdd && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                onAdd()
-              }}
-              disabled={isInShelf}
-              className={cn(
-                'flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors',
-                isInShelf
-                  ? 'bg-green-light/20 text-green-deep'
-                  : 'bg-green-deep text-cream hover:bg-green-deep/90'
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (!isInShelf) setShowStatusMenu(!showStatusMenu)
+                }}
+                disabled={isInShelf}
+                className={cn(
+                  'flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors',
+                  isInShelf
+                    ? 'bg-green-light/20 text-green-deep'
+                    : 'bg-green-deep text-cream hover:bg-green-deep/90'
+                )}
+              >
+                {isInShelf ? (
+                  <>
+                    <Check weight="bold" className="h-4 w-4" />
+                    Na estante
+                  </>
+                ) : (
+                  <>
+                    <Plus weight="bold" className="h-4 w-4" />
+                    Adicionar
+                  </>
+                )}
+              </button>
+
+              {showStatusMenu && (
+                <div className="absolute right-0 bottom-full mb-2 z-20 w-44 overflow-hidden rounded-xl border border-cream-dark/80 bg-cream shadow-lg">
+                  <p className="px-3 pt-2.5 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                    Adicionar como
+                  </p>
+                  {ADD_STATUS_OPTIONS.map(({ key, label, icon: Icon, color }) => (
+                    <button
+                      key={key}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setShowStatusMenu(false)
+                        onAdd(key)
+                      }}
+                      className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-text-dark transition-colors hover:bg-cream-dark/40"
+                    >
+                      <Icon className={cn('h-4 w-4', color)} weight="fill" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
               )}
-            >
-              {isInShelf ? (
-                <>
-                  <Check weight="bold" className="h-4 w-4" />
-                  Na estante
-                </>
-              ) : (
-                <>
-                  <Plus weight="bold" className="h-4 w-4" />
-                  Adicionar
-                </>
-              )}
-            </button>
+            </div>
           )}
         </div>
       </div>

@@ -106,7 +106,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
     setError(null)
   }
 
-  const handleAddBook = async (book: BookSearchResult) => {
+  const handleAddBook = async (book: BookSearchResult, status: 'WANT_TO_READ' | 'READING' | 'READ' | 'ABANDONED') => {
     const bookId = book.googleBooksId || book.openLibraryKey || book.title
     setAddingBookId(bookId)
 
@@ -124,7 +124,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
       isbn13: book.isbn13,
       googleBooksId: book.googleBooksId,
       openLibraryKey: book.openLibraryKey,
-      status: 'WANT_TO_READ',
+      status,
       tags: [],
     })
 
@@ -216,7 +216,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
                   publisher={book.publisher}
                   pageCount={book.pageCount}
                   isInShelf={isBookInShelf(book)}
-                  onAdd={addingBookId === bookId ? undefined : () => handleAddBook(book)}
+                  onAdd={addingBookId === bookId ? undefined : (status) => handleAddBook(book, status)}
                 />
               )
             })}

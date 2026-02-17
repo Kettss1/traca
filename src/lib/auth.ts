@@ -17,6 +17,42 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db),
   session: { strategy: 'jwt' },
+  events: {
+    async createUser({ user }) {
+      // Auto-generate username for OAuth users (e.g. Google)
+      if (!user.id) return
+
+      const dbUser = await db.user.findUnique({
+        where: { id: user.id },
+        select: { username: true, name: true, email: true },
+      })
+
+      if (dbUser?.username) return
+
+      // Generate base from name or email
+      const base = (dbUser?.name || dbUser?.email?.split('@')[0] || 'user')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // remove accents
+        .replace(/[^a-z0-9]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '')
+        .slice(0, 20)
+
+      // Find a unique username
+      let username = base
+      let suffix = 1
+      while (await db.user.findUnique({ where: { username } })) {
+        username = `${base.slice(0, 17)}_${suffix}`
+        suffix++
+      }
+
+      await db.user.update({
+        where: { id: user.id },
+        data: { username },
+      })
+    },
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

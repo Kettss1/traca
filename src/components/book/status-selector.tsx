@@ -1,35 +1,53 @@
 'use client'
 
 import { useState } from 'react'
-import { BookOpen, BookmarkSimple, Check, X } from '@phosphor-icons/react'
+import { BookOpen, BookmarkSimple, CheckCircle, X } from '@phosphor-icons/react'
 import { updateUserBook } from '@/lib/actions/book'
 import { cn } from '@/lib/utils'
 import type { ReadingStatus } from '@/lib/validators/book'
 import { ShareCardModal } from './share-card-modal'
 
-const statusConfig: Record<ReadingStatus, { label: string; icon: typeof BookOpen; color: string }> =
+const statusConfig: {
+  key: ReadingStatus
+  label: string
+  icon: typeof BookOpen
+  bg: string
+  activeBg: string
+  text: string
+}[] = [
   {
-    WANT_TO_READ: {
-      label: 'Quero Ler',
-      icon: BookmarkSimple,
-      color: 'text-terracotta',
-    },
-    READING: {
-      label: 'Lendo',
-      icon: BookOpen,
-      color: 'text-green-deep',
-    },
-    READ: {
-      label: 'Lido',
-      icon: Check,
-      color: 'text-green-deep',
-    },
-    ABANDONED: {
-      label: 'Abandonado',
-      icon: X,
-      color: 'text-text-muted',
-    },
-  }
+    key: 'WANT_TO_READ',
+    label: 'Quero Ler',
+    icon: BookmarkSimple,
+    bg: 'bg-terracotta/5',
+    activeBg: 'bg-terracotta/15 ring-1 ring-terracotta/30',
+    text: 'text-terracotta',
+  },
+  {
+    key: 'READING',
+    label: 'Lendo',
+    icon: BookOpen,
+    bg: 'bg-green-light/5',
+    activeBg: 'bg-green-light/15 ring-1 ring-green-light/30',
+    text: 'text-green-deep',
+  },
+  {
+    key: 'READ',
+    label: 'Lido',
+    icon: CheckCircle,
+    bg: 'bg-green-deep/5',
+    activeBg: 'bg-green-deep/15 ring-1 ring-green-deep/30',
+    text: 'text-green-deep',
+  },
+  {
+    key: 'ABANDONED',
+    label: 'Abandonado',
+    icon: X,
+    bg: 'bg-brown/5',
+    activeBg: 'bg-brown/15 ring-1 ring-brown/30',
+    text: 'text-brown',
+  },
+]
 
 interface StatusSelectorProps {
   userBookId: string
@@ -53,76 +71,44 @@ export function StatusSelector({
   username,
 }: StatusSelectorProps) {
   const [status, setStatus] = useState<ReadingStatus>(currentStatus)
-  const [isOpen, setIsOpen] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
 
-  const currentConfig = statusConfig[status]
-  const Icon = currentConfig.icon
-
   async function handleSelect(newStatus: ReadingStatus) {
-    if (newStatus === status) {
-      setIsOpen(false)
-      return
-    }
+    if (newStatus === status || isUpdating) return
 
     setIsUpdating(true)
     const result = await updateUserBook({ userBookId, status: newStatus })
 
     if (result.success) {
       setStatus(newStatus)
-      // Show share modal when marking as READ
       if (newStatus === 'READ' && book) {
         setShowShareModal(true)
       }
     }
 
     setIsUpdating(false)
-    setIsOpen(false)
   }
 
   return (
     <>
-      <div className="relative">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          disabled={isUpdating}
-          className={cn(
-            'flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-            'border-brown/20 hover:border-green-deep/30 border',
-            currentConfig.color,
-            isUpdating && 'opacity-50'
-          )}
-        >
-          <Icon className="h-4 w-4" weight="fill" />
-          {currentConfig.label}
-        </button>
-
-        {isOpen && (
-          <>
-            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-            <div className="border-brown/10 absolute top-full right-0 z-20 mt-2 w-40 rounded-lg border bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
-              {(Object.keys(statusConfig) as ReadingStatus[]).map((key) => {
-                const config = statusConfig[key]
-                const StatusIcon = config.icon
-                return (
-                  <button
-                    key={key}
-                    onClick={() => handleSelect(key)}
-                    className={cn(
-                      'flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors',
-                      'hover:bg-cream-dark dark:hover:bg-gray-700',
-                      key === status ? config.color : 'text-text-muted'
-                    )}
-                  >
-                    <StatusIcon className="h-4 w-4" weight={key === status ? 'fill' : 'regular'} />
-                    {config.label}
-                  </button>
-                )
-              })}
-            </div>
-          </>
-        )}
+      <div className={cn('grid grid-cols-2 gap-2', isUpdating && 'pointer-events-none opacity-60')}>
+        {statusConfig.map(({ key, label, icon: Icon, bg, activeBg, text }) => {
+          const isActive = key === status
+          return (
+            <button
+              key={key}
+              onClick={() => handleSelect(key)}
+              className={cn(
+                'flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
+                isActive ? cn(activeBg, text) : cn(bg, 'text-text-muted hover:text-text-dark'),
+              )}
+            >
+              <Icon className="h-4.5 w-4.5 shrink-0" weight={isActive ? 'fill' : 'regular'} />
+              {label}
+            </button>
+          )
+        })}
       </div>
 
       {/* Share Card Modal */}
