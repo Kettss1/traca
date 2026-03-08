@@ -18,9 +18,9 @@ const updateProfileSchema = z.object({
   musicUrl: z.string().url('URL inválida').optional().or(z.literal('')),
   socialLinks: z
     .object({
-      instagram: z.string().max(100).optional(),
-      reddit: z.string().max(100).optional(),
-      tiktok: z.string().max(100).optional(),
+      instagram: z.string().max(30).regex(/^[a-zA-Z0-9_.]*$/, 'Handle inválido').optional(),
+      reddit: z.string().max(30).regex(/^[a-zA-Z0-9_-]*$/, 'Handle inválido').optional(),
+      tiktok: z.string().max(30).regex(/^[a-zA-Z0-9_.]*$/, 'Handle inválido').optional(),
     })
     .optional(),
 })
@@ -65,6 +65,16 @@ export async function updateProfile(data: z.infer<typeof updateProfileSchema>) {
         ...(musicUrl !== undefined && { musicUrl: musicUrl || null }),
         ...(socialLinks !== undefined && { socialLinks }),
       },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        bio: true,
+        quote: true,
+        musicUrl: true,
+        socialLinks: true,
+        avatarUrl: true,
+      },
     })
 
     // Revalidate profile pages
@@ -80,6 +90,19 @@ export async function updateProfile(data: z.infer<typeof updateProfileSchema>) {
   }
 }
 
+const ALLOWED_AVATAR_HOSTS = [
+  'lh3.googleusercontent.com',
+]
+
+const avatarUrlSchema = z.string().url().refine((url) => {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'https:' && ALLOWED_AVATAR_HOSTS.includes(parsed.hostname)
+  } catch {
+    return false
+  }
+}, 'URL de avatar não permitida')
+
 export async function updateAvatar(avatarUrl: string) {
   const session = await auth()
 
@@ -87,10 +110,15 @@ export async function updateAvatar(avatarUrl: string) {
     return { success: false, error: 'Não autenticado' }
   }
 
+  const parsed = avatarUrlSchema.safeParse(avatarUrl)
+  if (!parsed.success) {
+    return { success: false, error: 'URL de avatar inválida' }
+  }
+
   try {
     const updatedUser = await db.user.update({
       where: { id: session.user.id },
-      data: { avatarUrl },
+      data: { avatarUrl: parsed.data },
     })
 
     if (updatedUser.username) {
@@ -117,7 +145,6 @@ export async function getPublicProfile(username: string) {
       musicUrl: true,
       socialLinks: true,
       points: true,
-      coins: true,
       createdAt: true,
       _count: {
         select: {

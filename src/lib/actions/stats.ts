@@ -11,6 +11,11 @@ export async function setReadingGoal(year: number, targetBooks: number) {
     return { success: false, error: 'Não autenticado' }
   }
 
+  const currentYear = new Date().getFullYear()
+  if (!Number.isInteger(year) || year < 2020 || year > currentYear + 1) {
+    return { success: false, error: 'Ano inválido' }
+  }
+
   if (targetBooks < 1 || targetBooks > 365) {
     return { success: false, error: 'Meta deve ser entre 1 e 365 livros' }
   }
@@ -44,6 +49,10 @@ export async function logPagesRead(userBookId: string, pagesRead: number, date?:
 
   if (!session?.user?.id) {
     return { success: false, error: 'Não autenticado' }
+  }
+
+  if (!Number.isInteger(pagesRead) || pagesRead < 1 || pagesRead > 5000) {
+    return { success: false, error: 'Número de páginas deve ser entre 1 e 5000' }
   }
 
   const userBook = await db.userBook.findUnique({

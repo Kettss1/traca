@@ -132,7 +132,7 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
-                <FeedPostCard key={post.id} post={post} />
+                <FeedPostCard key={post.id} post={post} currentUserId={userId} />
               ))}
             </div>
           )}

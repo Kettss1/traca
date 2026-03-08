@@ -9,7 +9,10 @@ import { AuthError } from 'next-auth'
 const registerSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   email: z.email('Email inválido'),
-  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
+  password: z
+    .string()
+    .min(8, 'Senha deve ter pelo menos 8 caracteres')
+    .max(128, 'Senha deve ter no máximo 128 caracteres'),
   username: z
     .string()
     .min(3, 'Username deve ter pelo menos 3 caracteres')
@@ -41,16 +44,11 @@ export async function register(formData: FormData): Promise<ActionResult> {
 
   const { name, email, password, username } = parsed.data
 
-  // Check if email already exists
+  // Check if email or username already exists (generic message to prevent enumeration)
   const existingEmail = await db.user.findUnique({ where: { email } })
-  if (existingEmail) {
-    return { success: false, error: 'Este email já está em uso' }
-  }
-
-  // Check if username already exists
   const existingUsername = await db.user.findUnique({ where: { username } })
-  if (existingUsername) {
-    return { success: false, error: 'Este username já está em uso' }
+  if (existingEmail || existingUsername) {
+    return { success: false, error: 'Não foi possível criar a conta com os dados informados' }
   }
 
   // Hash password

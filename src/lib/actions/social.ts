@@ -93,12 +93,13 @@ export async function submitComment(postId: string, content: string) {
     return { success: false, error: 'Não autorizado' }
   }
 
-  if (!content.trim()) {
-    return { success: false, error: 'Comentário não pode estar vazio' }
+  const trimmed = content.trim()
+  if (!trimmed || trimmed.length > 2000) {
+    return { success: false, error: 'Comentário deve ter entre 1 e 2000 caracteres' }
   }
 
   try {
-    const comment = await addComment(session.user.id, postId, content.trim())
+    const comment = await addComment(session.user.id, postId, trimmed)
     revalidatePath('/feed')
 
     return { success: true, comment }
@@ -149,8 +150,23 @@ export async function shareQuote(userBookId: string, quote: string) {
     return { success: false, error: 'Não autorizado' }
   }
 
+  if (!quote.trim() || quote.trim().length > 2000) {
+    return { success: false, error: 'Citação deve ter entre 1 e 2000 caracteres' }
+  }
+
   try {
-    await createFeedPost(session.user.id, 'QUOTE_SHARED' as FeedPostType, userBookId, quote)
+    // Verify ownership of the userBook
+    const { db } = await import('@/lib/db')
+    const userBook = await db.userBook.findUnique({
+      where: { id: userBookId },
+      select: { userId: true },
+    })
+
+    if (!userBook || userBook.userId !== session.user.id) {
+      return { success: false, error: 'Livro não encontrado' }
+    }
+
+    await createFeedPost(session.user.id, 'QUOTE_SHARED' as FeedPostType, userBookId, quote.trim())
 
     // Award points for sharing quote
     await awardPoints(session.user.id, 'QUOTE_SHARED', {
@@ -172,6 +188,23 @@ export async function createPost(type: FeedPostType, userBookId?: string, conten
 
   if (!session?.user?.id) {
     return { success: false, error: 'Não autorizado' }
+  }
+
+  if (content && content.length > 5000) {
+    return { success: false, error: 'Conteúdo muito longo' }
+  }
+
+  // Verify ownership of the userBook if provided
+  if (userBookId) {
+    const { db } = await import('@/lib/db')
+    const userBook = await db.userBook.findUnique({
+      where: { id: userBookId },
+      select: { userId: true },
+    })
+
+    if (!userBook || userBook.userId !== session.user.id) {
+      return { success: false, error: 'Livro não encontrado' }
+    }
   }
 
   try {

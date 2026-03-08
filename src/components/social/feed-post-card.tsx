@@ -14,6 +14,7 @@ import { CommentSection } from './comment-section'
 interface FeedPostCardProps {
   post: FeedPostData
   showComments?: boolean
+  currentUserId?: string
 }
 
 const POST_TYPE_CONFIG = {
@@ -49,7 +50,7 @@ const POST_TYPE_CONFIG = {
   },
 }
 
-export function FeedPostCard({ post, showComments = false }: FeedPostCardProps) {
+export function FeedPostCard({ post, showComments = false, currentUserId }: FeedPostCardProps) {
   const [isLiked, setIsLiked] = useState(post.isLiked)
   const [likesCount, setLikesCount] = useState(post.likesCount)
   const [isLiking, setIsLiking] = useState(false)
@@ -218,7 +219,7 @@ export function FeedPostCard({ post, showComments = false }: FeedPostCardProps) 
       </div>
 
       {/* Comments */}
-      {showCommentsSection && <CommentSection postId={post.id} />}
+      {showCommentsSection && <CommentSection postId={post.id} currentUserId={currentUserId} />}
     </article>
   )
 }

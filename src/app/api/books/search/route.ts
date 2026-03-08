@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { auth } from '@/lib/auth'
 import { searchBooks as searchGoogleBooks } from '@/lib/api/google-books'
 import { searchBooks as searchOpenLibrary } from '@/lib/api/open-library'
 
@@ -9,6 +10,12 @@ const searchSchema = z.object({
 })
 
 export async function GET(request: Request) {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   const { searchParams } = new URL(request.url)
 
   const parsed = searchSchema.safeParse({

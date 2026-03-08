@@ -116,7 +116,7 @@ export async function addBookToShelf(
     console.error('Error adding book to shelf:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erro ao adicionar livro',
+      error: 'Erro ao adicionar livro',
     }
   }
 }
@@ -196,7 +196,7 @@ export async function updateUserBook(input: UpdateUserBookInput): Promise<Action
     console.error('Error updating user book:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erro ao atualizar livro',
+      error: 'Erro ao atualizar livro',
     }
   }
 }
@@ -241,7 +241,7 @@ export async function createReread(
     console.error('Error creating reread:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erro ao criar releitura',
+      error: 'Erro ao criar releitura',
     }
   }
 }
@@ -268,7 +268,7 @@ export async function removeFromShelf(userBookId: string): Promise<ActionResult>
     console.error('Error removing from shelf:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erro ao remover livro',
+      error: 'Erro ao remover livro',
     }
   }
 }
@@ -309,7 +309,7 @@ export async function createAnnotation(
     console.error('Error creating annotation:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erro ao criar anotação',
+      error: 'Erro ao criar anotação',
     }
   }
 }
@@ -339,7 +339,7 @@ export async function deleteAnnotation(annotationId: string): Promise<ActionResu
     console.error('Error deleting annotation:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erro ao deletar anotação',
+      error: 'Erro ao deletar anotação',
     }
   }
 }
@@ -379,7 +379,7 @@ export async function updateShelfOrder(
     console.error('Error updating shelf order:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erro ao reordenar estante',
+      error: 'Erro ao reordenar estante',
     }
   }
 }

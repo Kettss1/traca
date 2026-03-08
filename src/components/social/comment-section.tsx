@@ -23,9 +23,10 @@ interface Comment {
 
 interface CommentSectionProps {
   postId: string
+  currentUserId?: string
 }
 
-export function CommentSection({ postId }: CommentSectionProps) {
+export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [newComment, setNewComment] = useState('')
@@ -127,12 +128,14 @@ export function CommentSection({ postId }: CommentSectionProps) {
                         locale: ptBR,
                       })}
                     </span>
-                    <button
-                      onClick={() => handleDelete(comment.id)}
-                      className="rounded p-0.5 text-text-muted/60 transition-colors hover:text-terracotta"
-                    >
-                      <Trash className="h-3 w-3" />
-                    </button>
+                    {currentUserId === comment.user.id && (
+                      <button
+                        onClick={() => handleDelete(comment.id)}
+                        className="rounded p-0.5 text-text-muted/60 transition-colors hover:text-terracotta"
+                      >
+                        <Trash className="h-3 w-3" />
+                      </button>
+                    )}
                   </div>
                 </div>
                 <p className="mt-0.5 text-sm text-text-dark">{comment.content}</p>

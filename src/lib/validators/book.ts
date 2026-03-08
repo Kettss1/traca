@@ -2,6 +2,21 @@ import { z } from 'zod'
 
 export const readingStatusSchema = z.enum(['WANT_TO_READ', 'READING', 'READ', 'ABANDONED'])
 
+const ALLOWED_COVER_HOSTS = [
+  'books.google.com',
+  'covers.openlibrary.org',
+  'lh3.googleusercontent.com',
+]
+
+const safeCoverUrl = z.string().url().refine((url) => {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'https:' && ALLOWED_COVER_HOSTS.includes(parsed.hostname)
+  } catch {
+    return false
+  }
+}, 'URL de capa não permitida')
+
 export const addBookSchema = z.object({
   // Book data (from API or manual)
   title: z.string().min(1, 'Título é obrigatório'),
@@ -12,7 +27,7 @@ export const addBookSchema = z.object({
   synopsis: z.string().optional(),
   pageCount: z.number().int().positive().optional(),
   categories: z.array(z.string()).default([]),
-  coverUrl: z.string().url().optional(),
+  coverUrl: safeCoverUrl.optional(),
   isbn10: z.string().optional(),
   isbn13: z.string().optional(),
   googleBooksId: z.string().optional(),

@@ -6,10 +6,25 @@ export const runtime = 'edge'
 
 const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#4C7052')
 
+const ALLOWED_COVER_HOSTS = [
+  'books.google.com',
+  'covers.openlibrary.org',
+  'lh3.googleusercontent.com',
+]
+
+const safeCoverUrl = z.string().url().refine((url) => {
+  try {
+    const parsed = new URL(url)
+    return parsed.protocol === 'https:' && ALLOWED_COVER_HOSTS.includes(parsed.hostname)
+  } catch {
+    return false
+  }
+}, 'URL de capa não permitida')
+
 const shareCardSchema = z.object({
   title: z.string().max(200).default('Livro'),
   author: z.string().max(100).default('Autor'),
-  cover: z.string().url().optional(),
+  cover: safeCoverUrl.optional(),
   rating: z.string().regex(/^[0-5](\.[05])?$/).optional(),
   color1: hexColor,
   color2: z.string().regex(/^#[0-9a-fA-F]{6}$/).default('#2D2A26'),
