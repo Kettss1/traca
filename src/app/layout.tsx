@@ -3,7 +3,9 @@ import { Fraunces, Source_Sans_3 } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { SkipToContent } from '@/components/a11y/skip-to-content'
 import { ServiceWorkerRegister } from '@/components/pwa/service-worker-register'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import { AccessibilityAudit } from './accessibility-audit';
 
 const fraunces = Fraunces({
   variable: '--font-fraunces',
@@ -129,6 +131,8 @@ export default function RootLayout({
         <SkipToContent />
         <ThemeProvider>{children}</ThemeProvider>
         <ServiceWorkerRegister />
+        <Analytics />
+        <AccessibilityAudit />
       </body>
     </html>
   )

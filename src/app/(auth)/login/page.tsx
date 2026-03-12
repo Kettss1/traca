@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { GoogleLogo } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { track } from '@vercel/analytics'
 import { login, loginWithGoogle } from '@/lib/actions/auth'
 
 export default function LoginPage() {
@@ -17,11 +18,12 @@ export default function LoginPage() {
 
     const result = await login(formData)
 
-    if (!result.success) {
+    if (result.success) {
+      track('user_logged_in', { method: 'email' })
+    } else {
       setError(result.error)
       setIsLoading(false)
     }
-    // If success, the action will redirect
   }
 
   return (
@@ -32,7 +34,7 @@ export default function LoginPage() {
       </div>
 
       {/* Google login */}
-      <form action={loginWithGoogle}>
+      <form action={loginWithGoogle} onSubmit={() => track('user_logged_in', { method: 'google' })}>
         <Button type="submit" variant="secondary" className="w-full">
           <GoogleLogo weight="bold" className="mr-2 h-5 w-5" />
           Continuar com Google

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { BookOpen, BookmarkSimple, CheckCircle, X } from '@phosphor-icons/react'
+import { track } from '@vercel/analytics'
 import { updateUserBook } from '@/lib/actions/book'
 import { cn } from '@/lib/utils'
 import type { ReadingStatus } from '@/lib/validators/book'
@@ -81,6 +82,7 @@ export function StatusSelector({
     const result = await updateUserBook({ userBookId, status: newStatus })
 
     if (result.success) {
+      track('book_status_changed', { from: status, to: newStatus })
       setStatus(newStatus)
       if (newStatus === 'READ' && book) {
         setShowShareModal(true)

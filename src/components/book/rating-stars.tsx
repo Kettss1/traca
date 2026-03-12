@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Star } from '@phosphor-icons/react'
+import { track } from '@vercel/analytics'
 import { updateUserBook } from '@/lib/actions/book'
 import { cn } from '@/lib/utils'
 
@@ -28,6 +29,7 @@ export function RatingStars({ userBookId, currentRating, readonly }: RatingStars
     const result = await updateUserBook({ userBookId, rating: finalRating })
 
     if (result.success) {
+      track('book_rated', { rating: finalRating ?? 0 })
       setRating(finalRating)
     }
 

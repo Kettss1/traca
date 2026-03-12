@@ -5,6 +5,7 @@ import { MagnifyingGlass, BookOpen, User } from '@phosphor-icons/react'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import { BookCard } from '@/components/book/book-card'
+import { track } from '@vercel/analytics'
 import { addBookToShelf } from '@/lib/actions/book'
 import { cn } from '@/lib/utils'
 
@@ -72,6 +73,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
       }
 
       setResults(data.results)
+      track('book_searched', { mode: searchMode, results_count: data.results.length })
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') return
       setError(err instanceof Error ? err.message : 'Erro ao buscar livros')
@@ -131,6 +133,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
     setAddingBookId(null)
 
     if (result.success) {
+      track('book_added_to_shelf', { status, title: book.title })
       setAddedBooks((prev) => new Set(prev).add(bookId))
       onBookAdded?.()
     } else {

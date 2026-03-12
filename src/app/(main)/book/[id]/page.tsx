@@ -8,6 +8,7 @@ import { StatusSelector } from '@/components/book/status-selector'
 import { RatingStars } from '@/components/book/rating-stars'
 import { BookDetailsForm } from '@/components/book/book-details-form'
 import { RereadButton } from '@/components/book/reread-button'
+import { RemoveFromShelfButton } from '@/components/book/remove-from-shelf-button'
 import { ReadingHistory } from '@/components/book/reading-history'
 import { AnnotationForm } from '@/components/book/annotation-form'
 import { AnnotationCard } from '@/components/book/annotation-card'
@@ -230,6 +231,10 @@ export default async function BookPage({ params }: BookPageProps) {
                   <RereadButton userBookId={userBook.id} />
                 </div>
               )}
+
+              <div className="border-t border-cream-dark/80 pt-4">
+                <RemoveFromShelfButton userBookId={userBook.id} bookTitle={book.title} />
+              </div>
             </div>
           )}
         </div>
