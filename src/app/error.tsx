@@ -35,7 +35,7 @@ export default function Error({
         </button>
         <a
           href="/"
-          className="rounded-lg border border-brown/20 px-6 py-2 font-medium text-text-dark transition-colors hover:bg-cream-dark"
+          className="rounded-lg border border-line px-6 py-2 font-medium text-text-dark transition-colors hover:bg-cream-dark"
         >
           Página inicial
         </a>

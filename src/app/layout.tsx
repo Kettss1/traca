@@ -10,6 +10,7 @@ import { AccessibilityAudit } from './accessibility-audit';
 const fraunces = Fraunces({
   variable: '--font-fraunces',
   subsets: ['latin'],
+  axes: ['SOFT', 'opsz'],
   display: 'swap',
 })
 
@@ -21,8 +22,8 @@ const sourceSans3 = Source_Sans_3({
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#4C7052' },
-    { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
+    { media: '(prefers-color-scheme: light)', color: '#faf4e8' },
+    { media: '(prefers-color-scheme: dark)', color: '#16120e' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -126,7 +127,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${fraunces.variable} ${sourceSans3.variable} bg-cream antialiased dark:bg-gray-900`}
+        className={`${fraunces.variable} ${sourceSans3.variable} bg-cream antialiased`}
       >
         <SkipToContent />
         <ThemeProvider>{children}</ThemeProvider>

@@ -62,49 +62,49 @@ export default async function StatsPage() {
 
       {/* Charts grid */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-text-muted">
-            Distribuição por Status
+        <div className="card p-5">
+          <h2 className="section-title mb-4">
+            Distribuição por status
           </h2>
           <StatusChart
             data={[
-              { name: 'Lidos', value: stats.booksRead, color: '#115e59' },
-              { name: 'Lendo', value: stats.booksReading, color: '#0f766e' },
-              { name: 'Quero Ler', value: stats.booksWantToRead, color: '#c45c3e' },
-              { name: 'Abandonados', value: stats.booksAbandoned, color: '#6b5d4d' },
+              { name: 'Lidos', value: stats.booksRead, color: 'var(--green-deep)' },
+              { name: 'Lendo', value: stats.booksReading, color: 'var(--green-accent)' },
+              { name: 'Quero Ler', value: stats.booksWantToRead, color: 'var(--terracotta)' },
+              { name: 'Abandonados', value: stats.booksAbandoned, color: 'var(--text-muted)' },
             ]}
           />
         </div>
 
-        <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-text-muted">
-            Autores Mais Lidos
+        <div className="card p-5">
+          <h2 className="section-title mb-4">
+            Autores mais lidos
           </h2>
           <AuthorChart data={authorStats} />
         </div>
       </div>
 
       {/* Monthly reading */}
-      <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-text-muted">
-          Livros por Mês ({currentYear})
+      <div className="card p-5">
+        <h2 className="section-title mb-4">
+          Livros por mês ({currentYear})
         </h2>
         <MonthlyChart data={monthlyStats} />
       </div>
 
       {/* Reading calendar */}
-      <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-text-muted">
-          Calendário de Leitura ({currentYear})
+      <div className="card p-5">
+        <h2 className="section-title mb-4">
+          Calendário de leitura ({currentYear})
         </h2>
         <ReadingCalendar data={calendarData} year={currentYear} />
       </div>
 
       {/* Publishers */}
       {publisherStats.length > 0 && (
-        <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-text-muted">
-            Editoras Mais Lidas
+        <div className="card p-5">
+          <h2 className="section-title mb-4">
+            Editoras mais lidas
           </h2>
           <div className="space-y-3">
             {publisherStats.slice(0, 5).map((publisher, index) => (

@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BookOpen, MagnifyingGlass, ChartBar, User, SignOut, Gear, UsersThree, Trophy } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
+import { TracaLogo } from '@/components/brand/traca-logo'
+import { ThemeToggle } from './theme-toggle'
 
 const navItems = [
   { href: '/shelf', label: 'Estante', icon: BookOpen },
@@ -21,14 +23,11 @@ export function MainNav({ username }: MainNavProps) {
   const pathname = usePathname()
 
   return (
-    <header className="border-brown/10 bg-cream sticky top-0 z-50 border-b">
+    <header className="border-line bg-cream sticky top-0 z-50 border-b">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/shelf" className="flex items-center gap-2">
-          <div className="bg-green-deep flex h-9 w-9 items-center justify-center rounded-lg">
-            <BookOpen className="text-cream h-5 w-5" weight="fill" />
-          </div>
-          <span className="font-fraunces text-green-deep text-xl font-semibold">Traça</span>
+        <Link href="/shelf" aria-label="Traça — minha estante">
+          <TracaLogo />
         </Link>
 
         {/* Navigation */}
@@ -65,6 +64,7 @@ export function MainNav({ username }: MainNavProps) {
               <span className="hidden sm:inline">{username}</span>
             </Link>
           )}
+          <ThemeToggle />
           <Link
             href="/settings"
             className="text-text-muted hover:bg-cream-dark hover:text-text-dark rounded-lg p-2"
@@ -83,7 +83,7 @@ export function MainNav({ username }: MainNavProps) {
       </div>
 
       {/* Mobile navigation */}
-      <nav className="border-brown/10 flex justify-around border-t py-2 md:hidden">
+      <nav className="border-line flex justify-around border-t py-2 md:hidden">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname.startsWith(item.href)

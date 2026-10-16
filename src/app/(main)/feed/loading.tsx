@@ -16,7 +16,7 @@ export default function FeedLoading() {
       {/* Posts */}
       <div className="space-y-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+          <div key={i} className="card p-5">
             <div className="flex items-start gap-3">
               <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
               <div className="flex-1">

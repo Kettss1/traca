@@ -71,7 +71,7 @@ export default async function AchievementsPage() {
       </div>
 
       {/* Overall progress */}
-      <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-4">
+      <div className="card p-4">
         <div className="flex items-center justify-between text-sm">
           <span className="text-text-muted">Progresso geral</span>
           <span className="tabular-nums font-medium text-green-deep">
@@ -91,7 +91,7 @@ export default async function AchievementsPage() {
         <div className="space-y-6">
           {Object.entries(groupedAchievements).map(([category, categoryAchievements]) => (
             <div key={category}>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">
+              <h2 className="section-title mb-3">
                 {categoryLabels[category] || category}
               </h2>
               <div className="grid gap-3 sm:grid-cols-2">

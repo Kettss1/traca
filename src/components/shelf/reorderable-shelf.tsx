@@ -127,7 +127,7 @@ export function ReorderableShelf({
             {/* Empty shelf message */}
             {shelfBooks.length === 0 && (
               <div className="relative z-10 flex h-full w-full items-center justify-center">
-                <p className="text-sm text-cream/60">Sua prateleira está vazia</p>
+                <p className="text-sm text-on-brand/60">Sua prateleira está vazia</p>
               </div>
             )}
           </div>

@@ -27,7 +27,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="rounded-xl bg-white p-8 shadow-sm">
+    <div className="card p-8">
       <div className="mb-8 text-center">
         <h1 className="font-fraunces text-text-dark text-2xl font-bold">Entrar no Traça</h1>
         <p className="text-text-muted mt-2">Acesse sua estante virtual</p>

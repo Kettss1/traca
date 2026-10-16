@@ -70,8 +70,8 @@ export function ShelfFilters({
           className={cn(
             'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
             isExpanded || hasActiveFilters
-              ? 'bg-green-deep text-cream'
-              : 'bg-white text-text-dark hover:bg-cream-dark'
+              ? 'bg-green-deep text-on-brand'
+              : 'bg-surface text-text-dark hover:bg-cream-dark'
           )}
         >
           <Funnel className="h-4 w-4" />
@@ -96,14 +96,14 @@ export function ShelfFilters({
 
       {/* Expanded filters */}
       {isExpanded && (
-        <div className="grid gap-4 rounded-lg bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 card p-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* Status filter */}
           <div>
             <label className="mb-2 block text-xs font-medium text-text-muted">Status</label>
             <select
               value={selectedStatus || ''}
               onChange={(e) => onStatusChange((e.target.value as ReadingStatus) || null)}
-              className="w-full rounded-lg border border-brown/20 bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
+              className="w-full rounded-lg border border-line bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
             >
               <option value="">Todos</option>
               {Object.entries(STATUS_LABELS).map(([value, label]) => (
@@ -121,7 +121,7 @@ export function ShelfFilters({
               <select
                 value={selectedAuthor || ''}
                 onChange={(e) => onAuthorChange(e.target.value || null)}
-                className="w-full rounded-lg border border-brown/20 bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
+                className="w-full rounded-lg border border-line bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
               >
                 <option value="">Todos</option>
                 {authors.map((author) => (
@@ -140,7 +140,7 @@ export function ShelfFilters({
               <select
                 value={selectedPublisher || ''}
                 onChange={(e) => onPublisherChange(e.target.value || null)}
-                className="w-full rounded-lg border border-brown/20 bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
+                className="w-full rounded-lg border border-line bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
               >
                 <option value="">Todas</option>
                 {publishers.map((publisher) => (
@@ -159,7 +159,7 @@ export function ShelfFilters({
               <select
                 value={selectedCategory || ''}
                 onChange={(e) => onCategoryChange(e.target.value || null)}
-                className="w-full rounded-lg border border-brown/20 bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
+                className="w-full rounded-lg border border-line bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
               >
                 <option value="">Todas</option>
                 {categories.map((category) => (
@@ -178,7 +178,7 @@ export function ShelfFilters({
               <select
                 value={selectedTag || ''}
                 onChange={(e) => onTagChange(e.target.value || null)}
-                className="w-full rounded-lg border border-brown/20 bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
+                className="w-full rounded-lg border border-line bg-cream px-3 py-2 text-sm text-text-dark focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
               >
                 <option value="">Todas</option>
                 {tags.map((tag) => (

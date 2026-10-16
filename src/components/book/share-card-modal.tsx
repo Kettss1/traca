@@ -108,17 +108,17 @@ export function ShareCardModal({
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-4 z-50 m-auto flex max-h-[90vh] max-w-xl flex-col overflow-hidden rounded-2xl bg-cream shadow-2xl dark:bg-gray-800"
+            className="fixed inset-4 z-50 m-auto flex max-h-[90vh] max-w-xl flex-col overflow-hidden rounded-2xl bg-cream shadow-2xl"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-brown/10 p-6 dark:border-gray-700">
+            <div className="flex items-center justify-between border-b border-line p-6">
               <div className="flex items-center gap-3">
                 <Confetti className="h-8 w-8 text-terracotta" weight="fill" />
                 <div>
-                  <h2 className="font-fraunces text-xl font-bold text-text-dark dark:text-white">
+                  <h2 className="font-fraunces text-xl font-bold text-text-dark">
                     Parabéns!
                   </h2>
                   <p className="text-sm text-text-muted">Você terminou de ler este livro!</p>
@@ -126,7 +126,7 @@ export function ShareCardModal({
               </div>
               <button
                 onClick={onClose}
-                className="rounded-full p-2 text-text-muted transition-colors hover:bg-cream-dark hover:text-text-dark dark:hover:bg-gray-700"
+                className="rounded-full p-2 text-text-muted transition-colors hover:bg-cream-dark hover:text-text-dark"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -145,8 +145,8 @@ export function ShareCardModal({
                   className={cn(
                     'flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
                     format === 'story'
-                      ? 'bg-green-deep text-cream'
-                      : 'bg-white text-text-dark hover:bg-cream-dark dark:bg-gray-700 dark:text-white'
+                      ? 'bg-green-deep text-on-brand'
+                      : 'bg-surface text-text-dark hover:bg-cream-dark'
                   )}
                 >
                   <ImageIcon className="h-4 w-4" />
@@ -157,8 +157,8 @@ export function ShareCardModal({
                   className={cn(
                     'flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
                     format === 'feed'
-                      ? 'bg-green-deep text-cream'
-                      : 'bg-white text-text-dark hover:bg-cream-dark dark:bg-gray-700 dark:text-white'
+                      ? 'bg-green-deep text-on-brand'
+                      : 'bg-surface text-text-dark hover:bg-cream-dark'
                   )}
                 >
                   <ImageIcon className="h-4 w-4" />
@@ -185,15 +185,15 @@ export function ShareCardModal({
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 border-t border-brown/10 p-6 dark:border-gray-700">
+            <div className="flex gap-3 border-t border-line p-6">
               <button
                 onClick={handleDownload}
                 disabled={isDownloading}
                 className={cn(
                   'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium transition-colors',
                   downloadSuccess
-                    ? 'bg-green-deep text-cream'
-                    : 'bg-green-deep text-cream hover:bg-green-deep/90'
+                    ? 'bg-green-deep text-on-brand'
+                    : 'bg-green-deep text-on-brand hover:bg-green-deep/90'
                 )}
               >
                 {downloadSuccess ? (
@@ -214,7 +214,7 @@ export function ShareCardModal({
               {canShare && (
                 <button
                   onClick={handleShare}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-terracotta px-4 py-3 font-medium text-cream transition-colors hover:bg-terracotta/90"
+                  className="flex items-center justify-center gap-2 rounded-lg bg-terracotta px-4 py-3 font-medium text-on-brand transition-colors hover:bg-terracotta/90"
                 >
                   <ShareNetwork className="h-5 w-5" />
                   Compartilhar

@@ -27,7 +27,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="rounded-xl bg-white p-8 shadow-sm">
+    <div className="card p-8">
       <div className="mb-8 text-center">
         <h1 className="font-fraunces text-text-dark text-2xl font-bold">Criar Conta</h1>
         <p className="text-text-muted mt-2">Comece a organizar suas leituras</p>

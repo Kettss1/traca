@@ -39,7 +39,7 @@ export function AuthorChart({ data }: AuthorChartProps) {
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${(author.count / maxCount) * 100}%`,
-                  backgroundColor: `color-mix(in srgb, #115e59 ${100 - index * 15}%, #14b8a6)`,
+                  backgroundColor: `color-mix(in srgb, var(--green-deep) ${100 - index * 15}%, var(--green-accent))`,
                 }}
               />
             </div>

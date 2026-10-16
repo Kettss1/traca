@@ -103,7 +103,7 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
           className={cn(
             'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all',
             feedType === 'home'
-              ? 'bg-cream text-green-deep shadow-sm'
+              ? 'bg-surface text-green-deep shadow-sm'
               : 'text-text-muted hover:text-text-dark'
           )}
         >
@@ -115,7 +115,7 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
           className={cn(
             'flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all',
             feedType === 'global'
-              ? 'bg-cream text-green-deep shadow-sm'
+              ? 'bg-surface text-green-deep shadow-sm'
               : 'text-text-muted hover:text-text-dark'
           )}
         >
@@ -150,7 +150,7 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
         {/* Sidebar */}
         <div className="hidden lg:block">
           <div className="sticky top-20 space-y-4">
-            <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/30 p-4">
+            <div className="card p-4">
               <div className="mb-3 flex items-center gap-2 text-sm font-medium text-text-dark">
                 <MagnifyingGlass className="h-4 w-4 text-green-deep" />
                 Encontrar Leitores
@@ -166,7 +166,7 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
 
 function EmptyFeed({ feedType }: { feedType: FeedType }) {
   return (
-    <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 px-6 py-12 text-center">
+    <div className="card px-6 py-12 text-center">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-cream-dark/60">
         <Books className="h-8 w-8 text-text-muted" />
       </div>

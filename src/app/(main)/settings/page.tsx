@@ -37,13 +37,13 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="font-fraunces mb-8 text-3xl font-bold text-text-dark dark:text-white">
+      <h1 className="font-fraunces mb-8 text-3xl font-bold text-text-dark">
         Configurações
       </h1>
 
       {/* Theme settings */}
       <div className="mb-8">
-        <h2 className="font-fraunces mb-4 text-xl font-semibold text-text-dark dark:text-white">
+        <h2 className="font-fraunces mb-4 text-xl font-semibold text-text-dark">
           Aparência
         </h2>
         <ThemeSelector />
@@ -51,7 +51,7 @@ export default async function SettingsPage() {
 
       {/* Profile settings */}
       <div>
-        <h2 className="font-fraunces mb-4 text-xl font-semibold text-text-dark dark:text-white">
+        <h2 className="font-fraunces mb-4 text-xl font-semibold text-text-dark">
           Perfil
         </h2>
         <ProfileForm user={user} />

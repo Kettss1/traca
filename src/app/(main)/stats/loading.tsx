@@ -14,7 +14,7 @@ export default function StatsLoading() {
       {/* Stats cards */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-4">
+          <div key={i} className="card p-4">
             <Skeleton className="h-9 w-9 rounded-xl" />
             <Skeleton className="mt-3 h-7 w-14" />
             <Skeleton className="mt-1.5 h-3 w-20" />
@@ -23,7 +23,7 @@ export default function StatsLoading() {
       </div>
 
       {/* Reading goal */}
-      <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+      <div className="card p-5">
         <div className="flex items-center gap-3">
           <Skeleton className="h-10 w-10 rounded-xl" />
           <div>
@@ -37,7 +37,7 @@ export default function StatsLoading() {
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+          <div key={i} className="card p-5">
             <Skeleton className="mb-4 h-4 w-40" />
             <Skeleton className="h-56 w-full rounded-xl" />
           </div>
@@ -45,7 +45,7 @@ export default function StatsLoading() {
       </div>
 
       {/* Monthly chart */}
-      <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+      <div className="card p-5">
         <Skeleton className="mb-4 h-4 w-44" />
         <Skeleton className="h-64 w-full rounded-xl" />
       </div>

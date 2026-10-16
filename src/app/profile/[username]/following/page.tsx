@@ -38,19 +38,19 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
       <div className="mb-6">
         <Link
           href={`/profile/${username}`}
-          className="inline-flex items-center gap-2 text-text-muted hover:text-text-dark dark:hover:text-white"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-dark"
         >
           <CaretLeft className="h-5 w-5" />
           Voltar para o perfil
         </Link>
       </div>
 
-      <h1 className="font-fraunces mb-6 text-2xl font-bold text-text-dark dark:text-white">
+      <h1 className="font-fraunces mb-6 text-2xl font-bold text-text-dark">
         {user.name || user.username} segue
       </h1>
 
       {following.length === 0 ? (
-        <div className="rounded-lg bg-white p-8 text-center shadow-sm dark:bg-gray-800">
+        <div className="card p-8 text-center">
           <User className="mx-auto h-12 w-12 text-text-muted" />
           <p className="mt-4 text-text-muted">Não segue ninguém ainda</p>
         </div>
@@ -59,7 +59,7 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
           {following.map((user) => (
             <div
               key={user.id}
-              className="flex items-center gap-3 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+              className="flex items-center gap-3 card p-4"
             >
               <Link href={`/profile/${user.username}`}>
                 {user.avatarUrl ? (
@@ -80,7 +80,7 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
               <div className="flex-1">
                 <Link
                   href={`/profile/${user.username}`}
-                  className="font-medium text-text-dark hover:underline dark:text-white"
+                  className="font-medium text-text-dark hover:underline"
                 >
                   {user.name || user.username}
                 </Link>

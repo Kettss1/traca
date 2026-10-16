@@ -33,7 +33,7 @@ export function ReadingHistory({ readings }: ReadingHistoryProps) {
                 {readings.length - index}ª leitura
               </span>
               {reading.rating && (
-                <span className="flex items-center gap-0.5 text-amber-500">
+                <span className="flex items-center gap-0.5 text-terracotta">
                   <Star className="h-3 w-3" weight="fill" />
                   {reading.rating.toFixed(1)}
                 </span>

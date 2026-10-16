@@ -29,16 +29,16 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5ebd6" />
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--line)" />
         <XAxis
           dataKey="month"
-          tick={{ fontSize: 12, fill: '#6b5d4d' }}
-          axisLine={{ stroke: '#f5ebd6' }}
+          tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+          axisLine={{ stroke: 'var(--line)' }}
           tickLine={false}
         />
         <YAxis
           allowDecimals={false}
-          tick={{ fontSize: 12, fill: '#6b5d4d' }}
+          tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
           axisLine={false}
           tickLine={false}
         />
@@ -48,15 +48,15 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
             return [String(value), String(name)]
           }}
           contentStyle={{
-            backgroundColor: '#fdf6e9',
-            border: '1px solid #f5ebd6',
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--line)',
             borderRadius: '12px',
             fontSize: '13px',
           }}
         />
         <Bar
           dataKey="booksFinished"
-          fill="#115e59"
+          fill="var(--green-deep)"
           radius={[6, 6, 0, 0]}
           maxBarSize={40}
         />

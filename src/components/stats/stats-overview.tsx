@@ -75,7 +75,7 @@ function StatCard({
   iconBg: string
 }) {
   return (
-    <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-4">
+    <div className="card p-4">
       <div className={`inline-flex rounded-xl p-2 ${iconBg}`}>
         <Icon className={`h-5 w-5 ${iconColor}`} weight="fill" />
       </div>

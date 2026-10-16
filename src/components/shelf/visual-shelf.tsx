@@ -66,7 +66,7 @@ export function VisualShelf({ books, booksPerShelf = 12 }: VisualShelfProps) {
               {/* Empty shelf message */}
               {shelfBooks.length === 0 && (
                 <div className="flex h-full w-full items-center justify-center">
-                  <p className="text-sm text-cream/60">Sua prateleira está vazia</p>
+                  <p className="text-sm text-on-brand/60">Sua prateleira está vazia</p>
                 </div>
               )}
             </div>

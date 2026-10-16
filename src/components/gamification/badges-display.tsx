@@ -22,7 +22,7 @@ export function BadgesDisplay({ badges, username, showLink = true }: BadgesDispl
   }
 
   return (
-    <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-4">
+    <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-text-dark">Conquistas</h3>
         {showLink && (

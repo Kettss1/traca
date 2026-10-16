@@ -156,7 +156,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
           className={cn(
             'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
             mode === 'title'
-              ? 'bg-green-deep text-cream'
+              ? 'bg-green-deep text-on-brand'
               : 'bg-cream-dark text-text-muted hover:text-text-dark'
           )}
         >
@@ -169,7 +169,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
           className={cn(
             'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
             mode === 'author'
-              ? 'bg-green-deep text-cream'
+              ? 'bg-green-deep text-on-brand'
               : 'bg-cream-dark text-text-muted hover:text-text-dark'
           )}
         >

@@ -29,7 +29,7 @@ export default function ProfileLoading() {
       {/* Stats */}
       <div className="mb-8 grid grid-cols-3 gap-4 sm:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="rounded-lg bg-white p-4 shadow-sm">
+          <div key={i} className="card p-4">
             <Skeleton className="mx-auto h-6 w-6" />
             <Skeleton className="mx-auto mt-2 h-8 w-12" />
             <Skeleton className="mx-auto mt-1 h-4 w-16" />

@@ -180,13 +180,13 @@ export function ShelfContent({ userBooks }: ShelfContentProps) {
         <div className="flex-1">
           <ShelfSearch value={searchQuery} onChange={setSearchQuery} />
         </div>
-        <div className="flex rounded-lg bg-white p-1 shadow-sm">
+        <div className="flex card p-1">
           <button
             onClick={() => setViewMode('list')}
             className={cn(
               'flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors',
               viewMode === 'list'
-                ? 'bg-green-deep text-cream'
+                ? 'bg-green-deep text-on-brand'
                 : 'text-text-muted hover:text-text-dark'
             )}
             title="Visualização em lista"
@@ -199,7 +199,7 @@ export function ShelfContent({ userBooks }: ShelfContentProps) {
             className={cn(
               'flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors',
               viewMode === 'shelf'
-                ? 'bg-green-deep text-cream'
+                ? 'bg-green-deep text-on-brand'
                 : 'text-text-muted hover:text-text-dark'
             )}
             title="Visualização em estante"
@@ -273,7 +273,7 @@ export function ShelfContent({ userBooks }: ShelfContentProps) {
           <AnimatedShelfView books={filteredBooks} />
         )
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-brown/20 py-16">
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-line py-16">
           <p className="text-text-muted">Nenhum livro encontrado com os filtros selecionados.</p>
         </div>
       )}

@@ -7,6 +7,7 @@ import { isFollowing } from '@/lib/services/social'
 import { getEarnedBadges } from '@/lib/services/gamification'
 import { generatePersonSchema } from '@/lib/seo/structured-data'
 import { JsonLd } from '@/components/seo/json-ld'
+import { parseQuote } from '@/lib/utils'
 import {
   User,
   Books,
@@ -84,6 +85,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     reddit?: string
     tiktok?: string
   } | null
+  const quote = profile.quote ? parseQuote(profile.quote) : null
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://lertraca.com.br'
   const personSchema = generatePersonSchema({
@@ -173,7 +175,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             {isOwnProfile ? (
               <Link
                 href="/settings"
-                className="inline-block rounded-lg bg-green-deep px-4 py-2 text-sm font-medium text-cream transition-colors hover:bg-green-deep/90"
+                className="inline-block rounded-lg bg-green-deep px-4 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-green-deep/90"
               >
                 Editar Perfil
               </Link>
@@ -197,18 +199,25 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       </div>
 
       {/* Quote */}
-      {profile.quote && (
-        <div className="mb-8 rounded-lg bg-white p-6 shadow-sm">
+      {quote && (
+        <figure className="mb-8 card p-6">
           <div className="flex items-start gap-3">
-            <Quotes className="h-6 w-6 flex-shrink-0 text-terracotta" />
-            <p className="italic text-text-dark">&ldquo;{profile.quote}&rdquo;</p>
+            <Quotes className="h-6 w-6 flex-shrink-0 text-terracotta" weight="fill" />
+            <div>
+              <blockquote className="font-fraunces text-lg italic text-text-dark">
+                &ldquo;{quote.text}&rdquo;
+              </blockquote>
+              {quote.author && (
+                <figcaption className="mt-2 text-sm text-text-muted">— {quote.author}</figcaption>
+              )}
+            </div>
           </div>
-        </div>
+        </figure>
       )}
 
       {/* Music */}
       {profile.musicUrl && (
-        <div className="mb-8 rounded-lg bg-white p-4 shadow-sm">
+        <div className="mb-8 card p-4">
           <div className="flex items-center gap-2 text-sm text-text-muted">
             <MusicNote className="h-4 w-4" />
             <span>Música favorita</span>
@@ -226,43 +235,43 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
       {/* Stats */}
       <div className="mb-8 grid grid-cols-3 gap-4 sm:grid-cols-6">
-        <div className="rounded-lg bg-white p-4 text-center shadow-sm dark:bg-gray-800">
+        <div className="card p-4 text-center">
           <Books className="mx-auto h-6 w-6 text-green-deep" />
-          <p className="mt-2 text-2xl font-bold text-text-dark dark:text-white">{profile.stats.total}</p>
+          <p className="mt-2 text-2xl font-bold text-text-dark">{profile.stats.total}</p>
           <p className="text-sm text-text-muted">Livros</p>
         </div>
-        <div className="rounded-lg bg-white p-4 text-center shadow-sm dark:bg-gray-800">
+        <div className="card p-4 text-center">
           <BookOpen className="mx-auto h-6 w-6 text-green-deep" />
-          <p className="mt-2 text-2xl font-bold text-text-dark dark:text-white">{profile.stats.reading}</p>
+          <p className="mt-2 text-2xl font-bold text-text-dark">{profile.stats.reading}</p>
           <p className="text-sm text-text-muted">Lendo</p>
         </div>
-        <div className="rounded-lg bg-white p-4 text-center shadow-sm dark:bg-gray-800">
+        <div className="card p-4 text-center">
           <BookmarkSimple className="mx-auto h-6 w-6 text-green-deep" weight="fill" />
-          <p className="mt-2 text-2xl font-bold text-text-dark dark:text-white">{profile.stats.read}</p>
+          <p className="mt-2 text-2xl font-bold text-text-dark">{profile.stats.read}</p>
           <p className="text-sm text-text-muted">Lidos</p>
         </div>
         <Link
           href={`/profile/${username}/followers`}
-          className="rounded-lg bg-white p-4 text-center shadow-sm transition-colors hover:bg-cream-light dark:bg-gray-800 dark:hover:bg-gray-700"
+          className="card p-4 text-center transition-colors hover:bg-cream-dark"
         >
           <Users className="mx-auto h-6 w-6 text-terracotta" />
-          <p className="mt-2 text-2xl font-bold text-text-dark dark:text-white">{profile._count.followers}</p>
+          <p className="mt-2 text-2xl font-bold text-text-dark">{profile._count.followers}</p>
           <p className="text-sm text-text-muted">Seguidores</p>
         </Link>
         <Link
           href={`/profile/${username}/following`}
-          className="rounded-lg bg-white p-4 text-center shadow-sm transition-colors hover:bg-cream-light dark:bg-gray-800 dark:hover:bg-gray-700"
+          className="card p-4 text-center transition-colors hover:bg-cream-dark"
         >
           <User className="mx-auto h-6 w-6 text-terracotta" />
-          <p className="mt-2 text-2xl font-bold text-text-dark dark:text-white">{profile._count.following}</p>
+          <p className="mt-2 text-2xl font-bold text-text-dark">{profile._count.following}</p>
           <p className="text-sm text-text-muted">Seguindo</p>
         </Link>
         <Link
           href="/achievements"
-          className="rounded-lg bg-white p-4 text-center shadow-sm transition-colors hover:bg-cream-light dark:bg-gray-800 dark:hover:bg-gray-700"
+          className="card p-4 text-center transition-colors hover:bg-cream-dark"
         >
-          <Trophy className="mx-auto h-6 w-6 text-yellow-500" />
-          <p className="mt-2 text-2xl font-bold text-text-dark dark:text-white">{profile.points.toLocaleString('pt-BR')}</p>
+          <Trophy className="mx-auto h-6 w-6 text-terracotta" />
+          <p className="mt-2 text-2xl font-bold text-text-dark">{profile.points.toLocaleString('pt-BR')}</p>
           <p className="text-sm text-text-muted">Pontos</p>
         </Link>
       </div>

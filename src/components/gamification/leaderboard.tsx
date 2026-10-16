@@ -49,8 +49,8 @@ export function Leaderboard({ pointsData, booksData, pagesData }: LeaderboardPro
   }
 
   return (
-    <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-text-muted">
+    <div className="card p-5">
+      <h2 className="section-title mb-4">
         Ranking
       </h2>
 
@@ -67,7 +67,7 @@ export function Leaderboard({ pointsData, booksData, pagesData }: LeaderboardPro
             className={cn(
               'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-medium transition-all',
               activeTab === key
-                ? 'bg-cream text-green-deep shadow-sm'
+                ? 'bg-surface text-green-deep shadow-sm'
                 : 'text-text-muted hover:text-text-dark'
             )}
           >

@@ -39,8 +39,8 @@ export function StatusChart({ data }: StatusChartProps) {
           <Tooltip
             formatter={(value) => [`${value} livros`, 'Quantidade']}
             contentStyle={{
-              backgroundColor: '#fdf6e9',
-              border: '1px solid #f5ebd6',
+              backgroundColor: 'var(--surface)',
+              border: '1px solid var(--line)',
               borderRadius: '12px',
               fontSize: '13px',
             }}

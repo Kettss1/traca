@@ -9,7 +9,7 @@ type ReadingStatus = 'WANT_TO_READ' | 'READING' | 'READ' | 'ABANDONED'
 
 const STATUS_CONFIG: Record<ReadingStatus, { label: string; className: string }> = {
   WANT_TO_READ: { label: 'Quero Ler', className: 'bg-terracotta/10 text-terracotta' },
-  READING: { label: 'Lendo', className: 'bg-green-light/20 text-green-deep' },
+  READING: { label: 'Lendo', className: 'bg-green-deep text-on-brand' },
   READ: { label: 'Lido', className: 'bg-green-deep/10 text-green-deep' },
   ABANDONED: { label: 'Abandonado', className: 'bg-brown/10 text-text-muted' },
 }
@@ -69,7 +69,7 @@ export function BookCard({
   return (
     <div
       className={cn(
-        'group border-brown/10 flex gap-4 rounded-lg border bg-white p-4 transition-all',
+        'group border-line flex gap-4 rounded-lg border bg-surface p-4 transition-all',
         'hover:border-green-deep/30 hover:shadow-md',
         onClick && 'cursor-pointer',
         className
@@ -134,7 +134,7 @@ export function BookCard({
           <div className="flex items-center gap-3">
             {pageCount && <span className="text-text-muted text-xs">{pageCount} páginas</span>}
             {rating !== undefined && rating !== null && rating > 0 && (
-              <span className="flex items-center gap-0.5 text-xs text-amber-500">
+              <span className="flex items-center gap-0.5 text-xs text-terracotta">
                 <Star className="h-3 w-3" weight="fill" />
                 {rating.toFixed(1)}
               </span>
@@ -153,7 +153,7 @@ export function BookCard({
                   'flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors',
                   isInShelf
                     ? 'bg-green-light/20 text-green-deep'
-                    : 'bg-green-deep text-cream hover:bg-green-deep/90'
+                    : 'bg-green-deep text-on-brand hover:bg-green-deep/90'
                 )}
               >
                 {isInShelf ? (
@@ -170,7 +170,7 @@ export function BookCard({
               </button>
 
               {showStatusMenu && (
-                <div className="absolute right-0 bottom-full mb-2 z-20 w-44 overflow-hidden rounded-xl border border-cream-dark/80 bg-cream shadow-lg">
+                <div className="absolute right-0 bottom-full mb-2 z-20 w-44 overflow-hidden rounded-xl border border-line bg-cream shadow-lg">
                   <p className="px-3 pt-2.5 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
                     Adicionar como
                   </p>

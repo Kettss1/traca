@@ -42,8 +42,8 @@ export function ShelfSort({ sortField, sortDirection, onSortChange }: ShelfSortP
             className={cn(
               'flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm transition-colors',
               sortField === option.value
-                ? 'bg-green-deep text-cream'
-                : 'bg-white text-text-dark hover:bg-cream-dark'
+                ? 'bg-green-deep text-on-brand'
+                : 'bg-surface text-text-dark hover:bg-cream-dark'
             )}
           >
             {option.label}

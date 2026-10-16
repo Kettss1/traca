@@ -63,7 +63,7 @@ export function RatingStars({ userBookId, currentRating, readonly }: RatingStars
             onMouseMove={(e) => handleMouseMove(starIndex, e)}
             disabled={readonly || isUpdating}
             className={cn(
-              'relative h-6 w-6 text-amber-400 transition-transform',
+              'relative h-6 w-6 text-terracotta transition-transform',
               !readonly && 'hover:scale-110',
               readonly && 'cursor-default'
             )}

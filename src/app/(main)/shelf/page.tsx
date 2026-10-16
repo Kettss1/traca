@@ -44,17 +44,17 @@ export default async function ShelfPage() {
             {stats.total} livro{stats.total !== 1 && 's'} na sua coleção
           </p>
         </div>
-        <Link href="/search">
-          <Button>
+        <Link href="/search" className="shrink-0">
+          <Button className="whitespace-nowrap">
             <Plus weight="bold" className="mr-2 h-4 w-4" />
-            Adicionar Livro
+            Adicionar livro
           </Button>
         </Link>
       </div>
 
       {/* Stats */}
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-lg bg-white p-4 shadow-sm">
+        <div className="card p-4">
           <p className="text-text-muted text-sm">Lendo</p>
           <p className="text-green-deep text-2xl font-bold">{stats.reading}</p>
           {stats.total > 0 && (
@@ -63,7 +63,7 @@ export default async function ShelfPage() {
             </p>
           )}
         </div>
-        <div className="rounded-lg bg-white p-4 shadow-sm">
+        <div className="card p-4">
           <p className="text-text-muted text-sm">Lidos</p>
           <p className="text-green-deep text-2xl font-bold">{stats.read}</p>
           {stats.total > 0 && (
@@ -72,7 +72,7 @@ export default async function ShelfPage() {
             </p>
           )}
         </div>
-        <div className="rounded-lg bg-white p-4 shadow-sm">
+        <div className="card p-4">
           <p className="text-text-muted text-sm">Quero Ler</p>
           <p className="text-terracotta text-2xl font-bold">{stats.wantToRead}</p>
           {stats.total > 0 && (
@@ -81,7 +81,7 @@ export default async function ShelfPage() {
             </p>
           )}
         </div>
-        <div className="rounded-lg bg-white p-4 shadow-sm">
+        <div className="card p-4">
           <p className="text-text-muted text-sm">Abandonados</p>
           <p className="text-text-muted text-2xl font-bold">{stats.abandoned}</p>
           {stats.total > 0 && (
@@ -96,7 +96,7 @@ export default async function ShelfPage() {
       {userBooks.length > 0 ? (
         <ShelfContent userBooks={userBooks} />
       ) : (
-        <div className="border-brown/20 flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16">
+        <div className="border-line flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16">
           <BookOpen className="text-text-muted/40 h-16 w-16" />
           <h3 className="text-text-dark mt-4 text-lg font-medium">Sua estante está vazia</h3>
           <p className="text-text-muted mt-2 text-center">Comece adicionando seu primeiro livro</p>

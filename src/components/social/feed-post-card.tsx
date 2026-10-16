@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Heart, ChatCircle, ShareNetwork, Star, BookOpen, CheckCircle, XCircle, Quotes } from '@phosphor-icons/react'
+import { Heart, ChatCircle, ShareNetwork, Star, StarHalf, BookOpen, CheckCircle, XCircle, Quotes } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { FeedPostData } from '@/lib/services/feed'
@@ -77,7 +77,7 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
   }
 
   return (
-    <article className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+    <article className="card p-5">
       {/* Header */}
       <div className="flex items-start gap-3">
         <Link href={`/profile/${post.user.username}`} className="shrink-0">
@@ -152,19 +152,22 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
           <div className="min-w-0">
             <p className="truncate font-medium text-text-dark">{post.book.title}</p>
             <p className="truncate text-sm text-text-muted">{post.book.authors.join(', ')}</p>
-            {post.rating && (
-              <div className="mt-1.5 flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    weight={i < Math.floor(post.rating!) ? 'fill' : 'regular'}
-                    className={cn(
-                      'h-3.5 w-3.5',
-                      i < Math.floor(post.rating!) ? 'text-terracotta' : 'text-cream-dark'
-                    )}
-                  />
-                ))}
-                <span className="ml-1.5 text-xs font-medium text-text-muted">{post.rating}</span>
+            {post.rating && (post.type === 'FINISHED' || post.type === 'REVIEW') && (
+              <div className="mt-1.5 flex items-center gap-0.5" aria-label={`Nota ${post.rating} de 5`}>
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const fill = post.rating! - i
+                  const Icon = fill >= 1 ? Star : fill >= 0.5 ? StarHalf : Star
+                  return (
+                    <Icon
+                      key={i}
+                      weight={fill >= 0.5 ? 'fill' : 'regular'}
+                      className={cn('h-3.5 w-3.5', fill >= 0.5 ? 'text-terracotta' : 'text-text-muted/40')}
+                    />
+                  )
+                })}
+                <span className="ml-1.5 text-xs font-medium text-text-muted">
+                  {post.rating.toLocaleString('pt-BR')}
+                </span>
               </div>
             )}
           </div>
