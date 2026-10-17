@@ -15,7 +15,6 @@ import { FavoriteQuoteSlide } from '@/components/retrospective/slides/favorite-q
 import { ComparisonSlide } from '@/components/retrospective/slides/comparison-slide'
 import { FinalSlide } from '@/components/retrospective/slides/final-slide'
 import type { RetrospectiveData } from '@/lib/services/retrospective'
-import { cn } from '@/lib/utils'
 import { useReducedMotion } from '@/hooks/use-reduced-motion'
 
 export default function RetrospectivePage() {
