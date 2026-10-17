@@ -41,7 +41,7 @@ export function FollowButton({
         className={cn(
           'flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors',
           isFollowing
-            ? 'bg-cream-dark text-text-dark hover:bg-red-100 hover:text-red-600'
+            ? 'bg-cream-dark text-text-dark hover:bg-terracotta/10 hover:text-terracotta'
             : 'bg-green-deep text-white hover:bg-green-deep/90',
           className
         )}

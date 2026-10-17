@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { BookOpen, Globe, Books, MagnifyingGlass } from '@phosphor-icons/react'
+import { BookOpen, Globe, Books } from '@phosphor-icons/react'
 import { FeedPostCard } from './feed-post-card'
-import { UserSearch } from './user-search'
+import { FeedSidebar, type FriendReading, type SuggestedReader } from './feed-sidebar'
 import { Spinner } from '@/components/ui/spinner'
 import type { FeedPostData } from '@/lib/services/feed'
 import { cn } from '@/lib/utils'
@@ -12,11 +12,13 @@ import { cn } from '@/lib/utils'
 interface FeedContentProps {
   initialPosts: FeedPostData[]
   userId: string
+  friendsReading: FriendReading[]
+  suggestedReaders: SuggestedReader[]
 }
 
 type FeedType = 'home' | 'global'
 
-export function FeedContent({ initialPosts, userId }: FeedContentProps) {
+export function FeedContent({ initialPosts, userId, friendsReading, suggestedReaders }: FeedContentProps) {
   const [posts, setPosts] = useState<FeedPostData[]>(initialPosts)
   const [feedType, setFeedType] = useState<FeedType>('home')
   const [cursor, setCursor] = useState<string | null>(null)
@@ -130,7 +132,7 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
           {posts.length === 0 && !isLoading ? (
             <EmptyFeed feedType={feedType} />
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {posts.map((post) => (
                 <FeedPostCard key={post.id} post={post} currentUserId={userId} />
               ))}
@@ -149,14 +151,8 @@ export function FeedContent({ initialPosts, userId }: FeedContentProps) {
 
         {/* Sidebar */}
         <div className="hidden lg:block">
-          <div className="sticky top-20 space-y-4">
-            <div className="card p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-text-dark">
-                <MagnifyingGlass className="h-4 w-4 text-green-deep" />
-                Encontrar Leitores
-              </div>
-              <UserSearch />
-            </div>
+          <div className="sticky top-20">
+            <FeedSidebar friendsReading={friendsReading} suggestedReaders={suggestedReaders} />
           </div>
         </div>
       </div>

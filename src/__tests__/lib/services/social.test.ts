@@ -6,6 +6,8 @@ import {
   unfollowUser,
   isFollowing,
   searchUsers,
+  getFriendsReading,
+  getSuggestedReaders,
 } from '@/lib/services/social'
 
 beforeEach(() => {
@@ -162,5 +164,39 @@ describe('searchUsers', () => {
 
     expect(result[0].isFollowing).toBe(false)
     expect(mockDb.follow.findMany).not.toHaveBeenCalled()
+  })
+})
+
+describe('getFriendsReading', () => {
+  it('retorna vazio sem buscar livros quando não segue ninguém', async () => {
+    mockDb.follow.findMany.mockResolvedValueOnce([])
+    expect(await getFriendsReading('user-1')).toEqual([])
+    expect(mockDb.userBook.findMany).not.toHaveBeenCalled()
+  })
+
+  it('busca só livros em leitura de quem o usuário segue', async () => {
+    mockDb.follow.findMany.mockResolvedValueOnce([{ followingId: 'u2' }, { followingId: 'u3' }])
+    await getFriendsReading('user-1')
+    expect(mockDb.userBook.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: { in: ['u2', 'u3'] }, status: 'READING' } })
+    )
+  })
+})
+
+describe('getSuggestedReaders', () => {
+  it('exclui o próprio usuário e quem ele já segue, e achata a contagem', async () => {
+    mockDb.follow.findMany.mockResolvedValueOnce([{ followingId: 'u2' }])
+    mockDb.user.findMany.mockResolvedValueOnce([
+      { id: 'u4', username: 'rafa', name: 'Rafa', avatarUrl: null, _count: { userBooks: 12 } },
+    ])
+
+    const result = await getSuggestedReaders('user-1')
+
+    expect(mockDb.user.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: { notIn: ['user-1', 'u2'] }, username: { not: null } },
+      })
+    )
+    expect(result).toEqual([{ id: 'u4', username: 'rafa', name: 'Rafa', avatarUrl: null, booksCount: 12 }])
   })
 })
