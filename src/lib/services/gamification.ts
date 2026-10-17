@@ -271,15 +271,46 @@ async function grantAchievement(
   ])
 }
 
-export async function getUserAchievements(userId: string) {
-  const userAchievements = await db.userAchievement.findMany({
-    where: { userId },
-    include: { achievement: true },
-  })
+type UserStats = Awaited<ReturnType<typeof getUserStats>>
 
-  const allAchievements = await db.achievement.findMany({
-    where: { isSecret: false },
-  })
+const REQUIREMENT_STAT: Record<string, keyof UserStats> = {
+  booksRead: 'booksReadCount',
+  booksAdded: 'booksCount',
+  pagesRead: 'pagesRead',
+  followers: 'followersCount',
+  following: 'followingCount',
+  annotations: 'annotationsCount',
+  quotesShared: 'quotesSharedCount',
+  points: 'points',
+  streak: 'streak',
+  accountAgeDays: 'accountAgeDays',
+}
+
+/** Quanto falta para uma conquista de requisito único (ex.: "6 de 100 livros"). */
+export function requirementProgress(
+  requirement: unknown,
+  stats: UserStats
+): { current: number; target: number } | null {
+  if (!requirement || typeof requirement !== 'object') return null
+  const entries = Object.entries(requirement as Record<string, unknown>)
+  if (entries.length !== 1) return null
+  const [key, target] = entries[0]
+  const statKey = REQUIREMENT_STAT[key]
+  if (!statKey || typeof target !== 'number' || target <= 0) return null
+  return { current: Math.min(stats[statKey], target), target }
+}
+
+export async function getUserAchievements(userId: string) {
+  const [userAchievements, allAchievements, stats] = await Promise.all([
+    db.userAchievement.findMany({
+      where: { userId },
+      include: { achievement: true },
+    }),
+    db.achievement.findMany({
+      where: { isSecret: false },
+    }),
+    getUserStats(userId),
+  ])
 
   // Map earned achievements
   const earnedMap = new Map(
@@ -288,11 +319,15 @@ export async function getUserAchievements(userId: string) {
 
   return allAchievements.map((achievement) => {
     const userAchievement = earnedMap.get(achievement.id)
+    const isEarned = !!userAchievement?.earnedAt
+    const live = isEarned ? null : requirementProgress(achievement.requirement, stats)
     return {
       ...achievement,
-      progress: userAchievement?.progress || 0,
+      progress: live ? Math.floor((live.current / live.target) * 100) : userAchievement?.progress || 0,
+      progressCurrent: live?.current ?? null,
+      progressTarget: live?.target ?? null,
       earnedAt: userAchievement?.earnedAt || null,
-      isEarned: !!userAchievement?.earnedAt,
+      isEarned,
     }
   })
 }

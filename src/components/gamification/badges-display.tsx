@@ -1,22 +1,23 @@
-'use client'
-
 import Link from 'next/link'
+import { AchievementIcon } from './achievement-icon'
 
 interface Badge {
   achievement: {
+    code: string
     icon: string
     name: string
+    category: string
   }
   earnedAt: Date | null
 }
 
 interface BadgesDisplayProps {
   badges: Badge[]
-  username: string
+  /** link "ver todas" só faz sentido no próprio perfil (a página é /achievements) */
   showLink?: boolean
 }
 
-export function BadgesDisplay({ badges, username, showLink = true }: BadgesDisplayProps) {
+export function BadgesDisplay({ badges, showLink = false }: BadgesDisplayProps) {
   if (badges.length === 0) {
     return null
   }
@@ -24,28 +25,28 @@ export function BadgesDisplay({ badges, username, showLink = true }: BadgesDispl
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-text-dark">Conquistas</h3>
+        <h3 className="section-title text-base">Conquistas</h3>
         {showLink && (
-          <Link
-            href={`/profile/${username}/achievements`}
-            className="text-xs font-medium text-green-deep hover:text-green-light"
-          >
+          <Link href="/achievements" className="text-green-deep hover:text-green-light text-sm font-medium">
             Ver todas
           </Link>
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {badges.map((badge, index) => (
-          <div
-            key={index}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-cream-dark/40 text-xl"
-            title={badge.achievement.name}
-          >
-            {badge.achievement.icon}
-          </div>
+      <ul className="flex flex-wrap gap-2.5">
+        {badges.map((badge) => (
+          <li key={badge.achievement.code} title={badge.achievement.name}>
+            <AchievementIcon
+              code={badge.achievement.code}
+              fallback={badge.achievement.icon}
+              category={badge.achievement.category}
+              earned
+              size={40}
+            />
+            <span className="sr-only">{badge.achievement.name}</span>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   )
 }

@@ -279,7 +279,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       {/* Badges */}
       {badges.length > 0 && (
         <div className="mb-8">
-          <BadgesDisplay badges={badges} username={username} />
+          <BadgesDisplay badges={badges} showLink={isOwnProfile} />
         </div>
       )}
 
