@@ -32,7 +32,6 @@ export function ProfileShelf({ books }: ProfileShelfProps) {
           const width = spineWidth(book.pageCount)
           const height = spineHeight(book.title)
           const palette = spinePalette(book.colorPrimary, book.colorSecondary)
-          const surname = book.authors[0]?.split(' ').slice(-1)[0]
           return (
             <li key={id} className="shrink-0">
               <Link
@@ -49,12 +48,8 @@ export function ProfileShelf({ books }: ProfileShelfProps) {
               >
                 <SpineFace
                   title={book.title}
-                  author={
-                    surname && surname.length <= 7 && width >= 26 && height >= 140
-                      ? surname
-                      : undefined
-                  }
                   width={width}
+                  height={height}
                   palette={palette}
                   coverUrl={book.coverUrl}
                 />

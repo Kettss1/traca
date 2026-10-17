@@ -1,20 +1,6 @@
 'use client'
 
-import { useState, useSyncExternalStore } from 'react'
-
-type Variant = 'slice' | 'blur' | 'squeeze'
-
-// TEMPORÁRIO para comparar no preview: ?spine=slice|blur|squeeze
-function useVariant(): Variant {
-  return useSyncExternalStore(
-    () => () => {},
-    () => {
-      const v = new URLSearchParams(window.location.search).get('spine')
-      return v === 'slice' || v === 'squeeze' ? v : 'blur'
-    },
-    () => 'blur'
-  )
-}
+import { useState } from 'react'
 
 interface SpineCoverProps {
   src: string
@@ -23,20 +9,13 @@ interface SpineCoverProps {
 }
 
 /**
- * Textura da lombada feita a partir da capa, tingida com a cor principal do livro.
- * Se a imagem falhar, some e fica só a cor.
+ * Textura da lombada feita a partir da capa: uma fatia perto da borda esquerda,
+ * desfocada para virar só cor e arte (sem letras da capa competindo com o título)
+ * e tingida com a cor principal do livro. Se a imagem falhar, fica só a cor.
  */
 export function SpineCover({ src, tint }: SpineCoverProps) {
   const [failed, setFailed] = useState(false)
-  const variant = useVariant()
   if (failed) return null
-
-  const imgStyle: React.CSSProperties =
-    variant === 'squeeze'
-      ? { objectFit: 'fill' }
-      : variant === 'blur'
-        ? { objectFit: 'cover', objectPosition: '12% 50%', filter: 'blur(2.5px) saturate(1.15)', transform: 'scale(1.15)' }
-        : { objectFit: 'cover', objectPosition: '12% 50%' }
 
   return (
     <>
@@ -50,10 +29,10 @@ export function SpineCover({ src, tint }: SpineCoverProps) {
         referrerPolicy="no-referrer"
         draggable={false}
         onError={() => setFailed(true)}
-        className="pointer-events-none absolute inset-0 h-full w-full select-none"
-        style={imgStyle}
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover select-none"
+        // scale esconde a borda clara que o blur cria nas laterais
+        style={{ objectPosition: '12% 50%', filter: 'blur(2.5px) saturate(1.15)', transform: 'scale(1.15)' }}
       />
-      {/* tinge com a cor do livro e escurece as pontas, como uma lombada impressa */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0"

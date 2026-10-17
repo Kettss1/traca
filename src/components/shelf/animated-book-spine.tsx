@@ -34,9 +34,6 @@ export function AnimatedBookSpine({
   const width = spineWidth(pageCount)
   const height = spineHeight(title)
   const palette = spinePalette(colorPrimary, colorSecondary)
-  const author = authors[0]?.split(' ').slice(-1)[0]
-  // sobrenomes curtos cabem inteiros no pé da lombada; os longos ficam só no título/tooltip
-  const showAuthor = !!author && author.length <= 7 && width >= 26 && height >= 140
 
   return (
     <motion.button
@@ -64,13 +61,7 @@ export function AnimatedBookSpine({
       aria-label={`${title}${authors.length ? `, de ${authors.join(', ')}` : ''}`}
       title={`${title}${authors.length ? ` — ${authors.join(', ')}` : ''}`}
     >
-      <SpineFace
-        title={title}
-        author={showAuthor ? author : undefined}
-        width={width}
-        palette={palette}
-        coverUrl={coverUrl}
-      />
+      <SpineFace title={title} width={width} height={height} palette={palette} coverUrl={coverUrl} />
     </motion.button>
   )
 }
