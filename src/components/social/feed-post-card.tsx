@@ -3,7 +3,18 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Heart, ChatCircle, Star, StarHalf, BookOpen, CheckCircle, XCircle, Quotes } from '@phosphor-icons/react'
+import {
+  Heart,
+  ChatCircle,
+  ShareNetwork,
+  Check,
+  Star,
+  StarHalf,
+  BookOpen,
+  CheckCircle,
+  XCircle,
+  Quotes,
+} from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { FeedPostData } from '@/lib/services/feed'
@@ -11,6 +22,8 @@ import { toggleLike } from '@/lib/actions/social'
 import { cn } from '@/lib/utils'
 import { CommentSection } from './comment-section'
 import { Avatar } from '@/components/ui/avatar'
+import { ShareCardModal } from '@/components/book/share-card-modal'
+import { shareOrCopy } from '@/lib/share'
 
 interface FeedPostCardProps {
   post: FeedPostData
@@ -56,6 +69,8 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
   const [likesCount, setLikesCount] = useState(post.likesCount)
   const [isLiking, setIsLiking] = useState(false)
   const [showCommentsSection, setShowCommentsSection] = useState(showComments)
+  const [showShareCard, setShowShareCard] = useState(false)
+  const [shareFeedback, setShareFeedback] = useState<string | null>(null)
 
   const config = POST_TYPE_CONFIG[post.type]
   const Icon = config.icon
@@ -81,6 +96,27 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
     setIsLiking(false)
   }
 
+  // o próprio post de leitura terminada vira o card de imagem; o resto compartilha o link do perfil
+  const canMakeCard =
+    !!post.book &&
+    post.user.id === currentUserId &&
+    (post.type === 'FINISHED' || post.type === 'REVIEW')
+
+  async function handleShare() {
+    if (canMakeCard) {
+      setShowShareCard(true)
+      return
+    }
+    const url = `${window.location.origin}/profile/${post.user.username}`
+    const text = post.book
+      ? `${userName} ${config.text} ${post.book.title} no Traça`
+      : `${userName} no Traça`
+    const outcome = await shareOrCopy({ title: 'Traça', text, url })
+    if (outcome === 'copied') setShareFeedback('Link copiado')
+    else if (outcome === 'failed') setShareFeedback('Não deu para copiar o link')
+    if (outcome === 'copied' || outcome === 'failed') setTimeout(() => setShareFeedback(null), 2000)
+  }
+
   const actions = (
     <div className="flex items-center gap-0.5">
       <button
@@ -102,12 +138,31 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
         aria-label="Comentários"
         className={cn(
           'flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors',
-          showCommentsSection ? 'text-green-deep' : 'text-text-muted hover:bg-cream-dark hover:text-green-deep'
+          showCommentsSection
+            ? 'text-green-deep'
+            : 'text-text-muted hover:bg-cream-dark hover:text-green-deep'
         )}
       >
-        <ChatCircle className="h-[18px] w-[18px]" weight={showCommentsSection ? 'fill' : 'regular'} />
+        <ChatCircle
+          className="h-[18px] w-[18px]"
+          weight={showCommentsSection ? 'fill' : 'regular'}
+        />
         {post.commentsCount > 0 && <span className="tabular-nums">{post.commentsCount}</span>}
       </button>
+      <button
+        onClick={handleShare}
+        aria-label={canMakeCard ? 'Gerar imagem para compartilhar' : 'Compartilhar'}
+        className="text-text-muted hover:bg-cream-dark hover:text-green-deep flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors"
+      >
+        {shareFeedback === 'Link copiado' ? (
+          <Check className="text-green-deep h-[18px] w-[18px]" weight="bold" />
+        ) : (
+          <ShareNetwork className="h-[18px] w-[18px]" />
+        )}
+      </button>
+      <span role="status" aria-live="polite" className="text-text-muted text-xs">
+        {shareFeedback}
+      </span>
     </div>
   )
 
@@ -119,7 +174,10 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
             <Avatar id={post.user.id} name={userName} src={post.user.avatarUrl} size={32} />
           </Link>
           <p className="text-text-dark min-w-0 flex-1 text-sm leading-snug">
-            <Link href={`/profile/${post.user.username}`} className="hover:text-green-deep font-semibold">
+            <Link
+              href={`/profile/${post.user.username}`}
+              className="hover:text-green-deep font-semibold"
+            >
               {userName}
             </Link>{' '}
             <span className={config.color}>
@@ -138,6 +196,15 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
         </div>
         <div className="mt-1 -mb-1 ml-9 sm:hidden">{actions}</div>
         {showCommentsSection && <CommentSection postId={post.id} currentUserId={currentUserId} />}
+        {showShareCard && post.book && (
+          <ShareCardModal
+            isOpen
+            onClose={() => setShowShareCard(false)}
+            book={post.book}
+            rating={post.rating}
+            username={post.user.username}
+          />
+        )}
       </article>
     )
   }
@@ -151,7 +218,10 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
         </Link>
         <div className="min-w-0 flex-1">
           <p className="text-text-dark text-sm leading-snug">
-            <Link href={`/profile/${post.user.username}`} className="hover:text-green-deep font-semibold">
+            <Link
+              href={`/profile/${post.user.username}`}
+              className="hover:text-green-deep font-semibold"
+            >
               {userName}
             </Link>{' '}
             <span className={config.color}>
@@ -176,7 +246,10 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
             </p>
             <p className="text-text-muted truncate text-sm">{post.book.authors.join(', ')}</p>
             {post.rating && (post.type === 'FINISHED' || post.type === 'REVIEW') && (
-              <div className="mt-1.5 flex items-center gap-0.5" aria-label={`Nota ${post.rating} de 5`}>
+              <div
+                className="mt-1.5 flex items-center gap-0.5"
+                aria-label={`Nota ${post.rating} de 5`}
+              >
                 {Array.from({ length: 5 }).map((_, i) => {
                   const fill = post.rating! - i
                   const StarIcon = fill >= 1 ? Star : fill >= 0.5 ? StarHalf : Star
@@ -184,7 +257,10 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
                     <StarIcon
                       key={i}
                       weight={fill >= 0.5 ? 'fill' : 'regular'}
-                      className={cn('h-4 w-4', fill >= 0.5 ? 'text-terracotta' : 'text-text-muted/40')}
+                      className={cn(
+                        'h-4 w-4',
+                        fill >= 0.5 ? 'text-terracotta' : 'text-text-muted/40'
+                      )}
                     />
                   )
                 })}
@@ -213,6 +289,15 @@ export function FeedPostCard({ post, showComments = false, currentUserId }: Feed
       <div className="mt-3 -ml-2.5">{actions}</div>
 
       {showCommentsSection && <CommentSection postId={post.id} currentUserId={currentUserId} />}
+      {showShareCard && post.book && (
+        <ShareCardModal
+          isOpen
+          onClose={() => setShowShareCard(false)}
+          book={post.book}
+          rating={post.rating}
+          username={post.user.username}
+        />
+      )}
     </article>
   )
 }

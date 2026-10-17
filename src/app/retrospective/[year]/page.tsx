@@ -1,9 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
-import { CaretLeft, CaretRight, X } from '@phosphor-icons/react'
+import { CaretLeft, CaretRight, X, ShareNetwork } from '@phosphor-icons/react'
+import { toBlob } from 'html-to-image'
+import { TracaMark } from '@/components/brand/traca-logo'
+import { downloadBlob } from '@/lib/share'
 import { RetrospectiveSlide } from '@/components/retrospective/retrospective-slide'
 import { IntroSlide } from '@/components/retrospective/slides/intro-slide'
 import { TotalBooksSlide } from '@/components/retrospective/slides/total-books-slide'
@@ -17,6 +20,9 @@ import { FinalSlide } from '@/components/retrospective/slides/final-slide'
 import type { RetrospectiveData } from '@/lib/services/retrospective'
 import { useReducedMotion } from '@/hooks/use-reduced-motion'
 
+const TRANSPARENT_PIXEL =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+
 export default function RetrospectivePage() {
   const params = useParams()
   const router = useRouter()
@@ -27,6 +33,10 @@ export default function RetrospectivePage() {
   const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [direction, setDirection] = useState(0)
+  // exportação da tela atual como imagem 1080x1920 (formato stories)
+  const [exporting, setExporting] = useState(false)
+  const [shareMessage, setShareMessage] = useState<string | null>(null)
+  const exportRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -152,6 +162,43 @@ export default function RetrospectivePage() {
     }
   }
 
+  async function shareCurrentSlide() {
+    if (exporting) return
+    setExporting(true)
+    setShareMessage('Gerando imagem…')
+    try {
+      // espera o clone fora da tela montar e terminar as animações de entrada (até ~1s)
+      await new Promise((resolve) => setTimeout(resolve, 1300))
+      const node = exportRef.current
+      if (!node) throw new Error('nó de exportação ausente')
+      const blob = await toBlob(node, { pixelRatio: 2, cacheBust: true, imagePlaceholder: TRANSPARENT_PIXEL })
+      if (!blob) throw new Error('imagem vazia')
+
+      const filename = `traca-retrospectiva-${year}-${currentSlide + 1}.png`
+      const file = new File([blob], filename, { type: 'image/png' })
+
+      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: `Minha retrospectiva ${year} no Traça` })
+          setShareMessage(null)
+        } catch (error) {
+          if (!(error instanceof DOMException && error.name === 'AbortError')) throw error
+          setShareMessage(null)
+        }
+      } else {
+        // desktop sem Web Share de arquivos: baixa a imagem
+        downloadBlob(blob, filename)
+        setShareMessage('Imagem baixada')
+      }
+    } catch (error) {
+      console.error('Erro ao gerar imagem da retrospectiva:', error)
+      setShareMessage('Não deu para gerar a imagem')
+    } finally {
+      setExporting(false)
+      setTimeout(() => setShareMessage(null), 2500)
+    }
+  }
+
   // Keyboard navigation
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -251,10 +298,45 @@ export default function RetrospectivePage() {
       <button
         onClick={() => router.push('/stats')}
         aria-label="Fechar retrospectiva"
-        className="absolute top-8 right-4 z-50 rounded-full p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+        className="absolute top-8 left-4 z-50 rounded-full p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
       >
         <X className="h-6 w-6" />
       </button>
+
+      {/* Compartilhar a tela atual como imagem */}
+      <div className="absolute top-8 right-4 z-50 flex items-center gap-2">
+        <span role="status" aria-live="polite" className="text-sm text-white/80">
+          {shareMessage}
+        </span>
+        <button
+          onClick={shareCurrentSlide}
+          disabled={exporting}
+          aria-label="Compartilhar esta tela como imagem"
+          className="rounded-full p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-50"
+        >
+          <ShareNetwork className="h-6 w-6" />
+        </button>
+      </div>
+
+      {/* Clone fora da tela no formato stories, usado só para gerar a imagem */}
+      {exporting && (
+        <div aria-hidden className="pointer-events-none fixed top-0 -left-[10000px]">
+          <div
+            ref={exportRef}
+            className="relative flex flex-col"
+            style={{ width: 540, height: 960, backgroundColor: slideColor(currentSlide) }}
+          >
+            <div className="flex-1">
+              <RetrospectiveSlide>{slides[currentSlide].component}</RetrospectiveSlide>
+            </div>
+            <div className="flex items-center justify-center gap-2 pb-10 text-white/80">
+              <TracaMark className="h-6 w-6" />
+              <span className="font-fraunces text-lg font-semibold">Traça</span>
+              <span className="text-sm">· retrospectiva {year}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Slides */}
       <AnimatePresence mode="wait" custom={direction}>

@@ -18,6 +18,7 @@ export interface FeedPostData {
     authors: string[]
     coverUrl: string | null
     colorPrimary: string | null
+    colorSecondary: string | null
   } | null
   rating: number | null
   likesCount: number
@@ -93,6 +94,7 @@ export async function getFeedPosts(
               authors: true,
               coverUrl: true,
               colorPrimary: true,
+              colorSecondary: true,
             },
           },
         },
