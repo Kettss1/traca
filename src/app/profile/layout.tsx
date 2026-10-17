@@ -9,7 +9,7 @@ export default async function ProfileLayout({ children }: { children: React.Reac
   return (
     <div className="bg-cream min-h-screen">
       {session?.user ? <MainNav username={session.user.username} /> : <Header />}
-      <main id="main-content">{children}</main>
+      <main id="main-content" className="pb-24 md:pb-0">{children}</main>
     </div>
   )
 }

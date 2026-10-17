@@ -12,7 +12,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <div className="bg-cream min-h-screen">
       <MainNav username={session.user.username} />
-      <main id="main-content" className="mx-auto max-w-6xl px-4 py-8">
+      <main id="main-content" className="mx-auto max-w-6xl px-4 pt-8 pb-28 md:pb-12">
         {children}
       </main>
     </div>
