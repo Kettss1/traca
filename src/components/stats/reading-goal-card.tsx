@@ -54,7 +54,7 @@ export function ReadingGoalCard({ goal, year }: ReadingGoalCardProps) {
     return (
       <div className="card p-5">
         <h3 className="mb-4 font-medium text-text-dark">
-          Meta de Leitura {year}
+          Meta de leitura {year}
         </h3>
         <div className="flex items-center gap-3">
           <label className="text-sm text-text-muted">Quero ler</label>
@@ -98,7 +98,7 @@ export function ReadingGoalCard({ goal, year }: ReadingGoalCardProps) {
           </div>
           <div>
             <h3 className="font-medium text-text-dark">
-              Meta de Leitura {year}
+              Meta de leitura {year}
             </h3>
             <p className="text-sm text-text-muted">
               {goal.current} de {goal.target} livros

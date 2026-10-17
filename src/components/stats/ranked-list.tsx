@@ -1,16 +1,18 @@
 'use client'
 
-import type { AuthorStats } from '@/lib/services/stats'
 
-interface AuthorChartProps {
-  data: AuthorStats[]
+
+interface RankedListProps {
+  data: { name: string; count: number }[]
+  emptyLabel: string
 }
 
-export function AuthorChart({ data }: AuthorChartProps) {
+/** Lista ranqueada com barra proporcional — autores, gêneros, editoras. */
+export function RankedList({ data, emptyLabel }: RankedListProps) {
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-sm text-text-muted">
-        Nenhum autor registrado ainda
+      <div className="flex h-40 items-center justify-center text-sm text-text-muted">
+        {emptyLabel}
       </div>
     )
   }
