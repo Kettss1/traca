@@ -12,6 +12,7 @@ interface AnimatedBookSpineProps {
   colorPrimary?: string
   colorSecondary?: string
   pageCount?: number
+  coverUrl?: string | null
   onClick?: () => void
   isDraggable?: boolean
   className?: string
@@ -24,6 +25,7 @@ export function AnimatedBookSpine({
   colorPrimary,
   colorSecondary,
   pageCount,
+  coverUrl,
   onClick,
   isDraggable,
   className,
@@ -53,12 +55,22 @@ export function AnimatedBookSpine({
         backgroundColor: palette.background,
         boxShadow: '1px 0 0 rgb(0 0 0 / 0.25), 3px 2px 6px rgb(0 0 0 / 0.35)',
       }}
-      whileHover={reduceMotion ? undefined : { y: -8, transition: { duration: 0.2, ease: [0.32, 0.72, 0, 1] } }}
+      whileHover={
+        reduceMotion
+          ? undefined
+          : { y: -8, transition: { duration: 0.2, ease: [0.32, 0.72, 0, 1] } }
+      }
       whileTap={reduceMotion ? undefined : { scale: 0.98 }}
       aria-label={`${title}${authors.length ? `, de ${authors.join(', ')}` : ''}`}
       title={`${title}${authors.length ? ` — ${authors.join(', ')}` : ''}`}
     >
-      <SpineFace title={title} author={showAuthor ? author : undefined} width={width} palette={palette} />
+      <SpineFace
+        title={title}
+        author={showAuthor ? author : undefined}
+        width={width}
+        palette={palette}
+        coverUrl={coverUrl}
+      />
     </motion.button>
   )
 }

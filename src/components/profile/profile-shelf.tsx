@@ -10,6 +10,7 @@ interface ProfileShelfProps {
       title: string
       authors: string[]
       pageCount: number | null
+      coverUrl: string | null
       colorPrimary: string | null
       colorSecondary: string | null
     }
@@ -48,9 +49,14 @@ export function ProfileShelf({ books }: ProfileShelfProps) {
               >
                 <SpineFace
                   title={book.title}
-                  author={surname && surname.length <= 7 && width >= 26 && height >= 140 ? surname : undefined}
+                  author={
+                    surname && surname.length <= 7 && width >= 26 && height >= 140
+                      ? surname
+                      : undefined
+                  }
                   width={width}
                   palette={palette}
+                  coverUrl={book.coverUrl}
                 />
               </Link>
             </li>
