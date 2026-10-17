@@ -177,7 +177,7 @@ export async function getPublicProfile(username: string) {
     where: { userId: user.id, isReread: false },
     include: { book: true },
     orderBy: { updatedAt: 'desc' },
-    take: 6,
+    take: 20,
   })
 
   return {

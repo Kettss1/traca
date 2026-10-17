@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { Avatar } from '@/components/ui/avatar'
 import { CaretLeft, User } from '@phosphor-icons/react/dist/ssr'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -62,19 +62,7 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
               className="flex items-center gap-3 card p-4"
             >
               <Link href={`/profile/${follower.username}`}>
-                {follower.avatarUrl ? (
-                  <Image
-                    src={follower.avatarUrl}
-                    alt={follower.name || follower.username || 'Avatar'}
-                    width={48}
-                    height={48}
-                    className="rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-light/20 text-lg text-green-deep">
-                    {(follower.name || follower.username || 'U')[0].toUpperCase()}
-                  </div>
-                )}
+                <Avatar id={follower.id} name={follower.name || follower.username} src={follower.avatarUrl} size={48} />
               </Link>
 
               <div className="flex-1">
