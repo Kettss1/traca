@@ -40,10 +40,10 @@ export function FavoriteQuoteSlide({ quote }: FavoriteQuoteSlideProps) {
         transition={{ delay: 0.5, duration: 0.6 }}
         className="relative rounded-xl bg-white/10 p-6 backdrop-blur-sm"
       >
-        <Quotes className="absolute left-3 top-3 h-6 w-6 text-green-light/30" weight="fill" />
+        <Quotes className="absolute left-3 top-3 h-6 w-6 text-white/25" weight="fill" />
         <p className="text-xl font-medium italic leading-relaxed">{displayQuote}</p>
         <Quotes
-          className="absolute bottom-3 right-3 h-6 w-6 rotate-180 text-green-light/30"
+          className="absolute bottom-3 right-3 h-6 w-6 rotate-180 text-white/25"
           weight="fill"
         />
       </motion.blockquote>

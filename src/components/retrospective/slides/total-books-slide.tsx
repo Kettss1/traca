@@ -37,7 +37,7 @@ export function TotalBooksSlide({ totalBooks, totalPages }: TotalBooksSlideProps
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.5, type: 'spring' }}
       >
-        <p className="text-8xl font-black text-green-light">{totalBooks}</p>
+        <p className="text-8xl sm:text-9xl font-fraunces font-semibold text-[#f3d9a4]">{totalBooks}</p>
         <p className="text-2xl font-medium">{totalBooks === 1 ? 'livro' : 'livros'}</p>
       </motion.div>
 
@@ -58,7 +58,7 @@ export function TotalBooksSlide({ totalBooks, totalPages }: TotalBooksSlideProps
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
           animate={reducedMotion ? { opacity: 1 } : { opacity: 1 }}
           transition={{ delay: 1, duration: 0.5 }}
-          className="text-sm text-green-light"
+          className="text-sm text-[#f3d9a4]"
         >
           Isso é mais de 1 livro por mês! Incrível!
         </motion.p>

@@ -26,7 +26,7 @@ export function ComparisonSlide({ comparison, year }: ComparisonSlideProps) {
         initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-2xl font-bold"
+        className="font-fraunces text-3xl font-semibold"
       >
         Comparado com {year - 1}
       </motion.h2>
@@ -41,7 +41,7 @@ export function ComparisonSlide({ comparison, year }: ComparisonSlideProps) {
           <span className="text-lg">Livros</span>
           <div className="flex items-center gap-2">
             {booksUp ? (
-              <ArrowUp className="h-6 w-6 text-green-light" weight="bold" />
+              <ArrowUp className="h-6 w-6 text-[#f3d9a4]" weight="bold" />
             ) : booksDown ? (
               <ArrowDown className="h-6 w-6 text-red-400" weight="bold" />
             ) : (
@@ -49,7 +49,7 @@ export function ComparisonSlide({ comparison, year }: ComparisonSlideProps) {
             )}
             <span
               className={`text-2xl font-bold ${
-                booksUp ? 'text-green-light' : booksDown ? 'text-red-400' : 'text-white/60'
+                booksUp ? 'text-[#f3d9a4]' : booksDown ? 'text-red-400' : 'text-white/60'
               }`}
             >
               {comparison.booksDiff > 0 ? '+' : ''}
@@ -67,7 +67,7 @@ export function ComparisonSlide({ comparison, year }: ComparisonSlideProps) {
           <span className="text-lg">Páginas</span>
           <div className="flex items-center gap-2">
             {pagesUp ? (
-              <ArrowUp className="h-6 w-6 text-green-light" weight="bold" />
+              <ArrowUp className="h-6 w-6 text-[#f3d9a4]" weight="bold" />
             ) : pagesDown ? (
               <ArrowDown className="h-6 w-6 text-red-400" weight="bold" />
             ) : (
@@ -75,7 +75,7 @@ export function ComparisonSlide({ comparison, year }: ComparisonSlideProps) {
             )}
             <span
               className={`text-2xl font-bold ${
-                pagesUp ? 'text-green-light' : pagesDown ? 'text-red-400' : 'text-white/60'
+                pagesUp ? 'text-[#f3d9a4]' : pagesDown ? 'text-red-400' : 'text-white/60'
               }`}
             >
               {comparison.pagesDiff > 0 ? '+' : ''}

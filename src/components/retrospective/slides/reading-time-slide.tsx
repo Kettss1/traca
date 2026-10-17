@@ -40,7 +40,7 @@ export function ReadingTimeSlide({ totalHours, totalSpent }: ReadingTimeSlidePro
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.5, type: 'spring' }}
       >
-        <p className="text-7xl font-black text-green-light">{totalHours}h</p>
+        <p className="text-7xl font-fraunces font-semibold text-[#f3d9a4]">{totalHours}h</p>
         <p className="text-xl font-medium">de leitura</p>
       </motion.div>
 

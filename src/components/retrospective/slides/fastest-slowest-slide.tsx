@@ -26,7 +26,7 @@ export function FastestSlowsetSlide({ fastestBook, slowestBook }: FastestSlowset
         initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-2xl font-bold"
+        className="font-fraunces text-3xl font-semibold"
       >
         Seus extremos de leitura
       </motion.h2>
@@ -38,13 +38,13 @@ export function FastestSlowsetSlide({ fastestBook, slowestBook }: FastestSlowset
           transition={{ delay: 0.4, duration: 0.5 }}
           className="rounded-xl bg-white/10 p-4 text-left backdrop-blur-sm"
         >
-          <div className="flex items-center gap-2 text-green-light">
+          <div className="flex items-center gap-2 text-[#f3d9a4]">
             <Lightning className="h-5 w-5" weight="fill" />
             <span className="text-sm font-medium uppercase tracking-wide">Mais rápido</span>
           </div>
           <p className="mt-2 text-xl font-bold">{fastestBook.title}</p>
           <p className="text-sm text-white/70">{fastestBook.author}</p>
-          <p className="mt-2 text-3xl font-black text-green-light">
+          <p className="mt-2 text-3xl font-fraunces font-semibold text-[#f3d9a4]">
             {fastestBook.days} {fastestBook.days === 1 ? 'dia' : 'dias'}
           </p>
         </motion.div>
@@ -63,7 +63,7 @@ export function FastestSlowsetSlide({ fastestBook, slowestBook }: FastestSlowset
           </div>
           <p className="mt-2 text-xl font-bold">{slowestBook.title}</p>
           <p className="text-sm text-white/70">{slowestBook.author}</p>
-          <p className="mt-2 text-3xl font-black text-orange-300">
+          <p className="mt-2 text-3xl font-fraunces font-semibold text-orange-300">
             {slowestBook.days} {slowestBook.days === 1 ? 'dia' : 'dias'}
           </p>
         </motion.div>
