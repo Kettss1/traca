@@ -1,7 +1,10 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { spineHeight, spinePalette, spineWidth } from './spine-style'
+
+const TITLE_LINE = 11.5
 
 interface AnimatedBookSpineProps {
   layoutId?: string
@@ -26,88 +29,84 @@ export function AnimatedBookSpine({
   isDraggable,
   className,
 }: AnimatedBookSpineProps) {
-  // Calculate spine width based on page count (min 28px, max 64px)
-  const baseWidth = pageCount ? Math.min(Math.max(pageCount / 8, 28), 64) : 36
-
-  // Determine text color based on background brightness
-  const bgColor = colorPrimary || '#8B7355'
-  const isLightBackground = isLightColor(bgColor)
-  const textColor = isLightBackground ? '#1a1714' : '#FFF8F0'
-  const textShadow = isLightBackground
-    ? '0 0 4px rgba(255,255,255,0.4)'
-    : '0 0 4px rgba(0,0,0,0.5)'
+  const reduceMotion = useReducedMotion()
+  const width = spineWidth(pageCount)
+  const height = spineHeight(title)
+  const palette = spinePalette(colorPrimary, colorSecondary)
+  const author = authors[0]?.split(' ').slice(-1)[0]
+  // sobrenomes curtos cabem inteiros no pé da lombada; os longos ficam só no título/tooltip
+  const showAuthor = !!author && author.length <= 7 && width >= 26 && height >= 140
 
   return (
     <motion.button
+      type="button"
       layoutId={layoutId}
       onClick={onClick}
       className={cn(
-        'group relative flex h-full flex-col items-center justify-end overflow-hidden rounded-sm',
-        'focus:outline-none focus-visible:brightness-125',
+        'group relative block shrink-0 overflow-hidden rounded-[3px] will-change-transform',
+        'focus-visible:ring-2 focus-visible:ring-[#f3d9a4] focus-visible:ring-offset-2 focus-visible:ring-offset-[#3b2c1f] focus-visible:outline-none',
         isDraggable && 'cursor-grab active:cursor-grabbing',
         className
       )}
       style={{
-        width: `${baseWidth}px`,
-        background: colorSecondary
-          ? `linear-gradient(160deg, ${colorPrimary || '#8B7355'} 0%, ${colorSecondary} 100%)`
-          : colorPrimary || '#8B7355',
-        boxShadow: '2px 2px 6px rgba(0,0,0,0.3), inset -1px 0 0 rgba(0,0,0,0.15)',
+        width,
+        height,
+        backgroundColor: palette.background,
+        boxShadow: '1px 0 0 rgb(0 0 0 / 0.25), 3px 2px 6px rgb(0 0 0 / 0.35)',
       }}
-      whileHover={{
-        y: -8,
-        transition: { type: 'spring', stiffness: 400, damping: 25 },
-      }}
-      whileTap={{ scale: 0.98 }}
-      title={`${title} - ${authors.join(', ')}`}
+      whileHover={reduceMotion ? undefined : { y: -8, transition: { duration: 0.2, ease: [0.32, 0.72, 0, 1] } }}
+      whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+      aria-label={`${title}${authors.length ? `, de ${authors.join(', ')}` : ''}`}
+      title={`${title}${authors.length ? ` — ${authors.join(', ')}` : ''}`}
     >
-      {/* Spine edge highlight (left = light hitting the edge) */}
-      <div
-        className="pointer-events-none absolute left-0 top-0 h-full w-[2px]"
-        style={{ backgroundColor: 'rgba(255,255,255,0.25)' }}
+      {/* volume: luz na borda esquerda, sombra na direita */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(90deg, rgb(255 255 255 / 0.22) 0, rgb(255 255 255 / 0.06) 18%, transparent 45%, rgb(0 0 0 / 0.08) 75%, rgb(0 0 0 / 0.28) 100%)',
+        }}
       />
 
-      {/* Subtle right edge shadow */}
-      <div
-        className="pointer-events-none absolute right-0 top-0 h-full w-[1px]"
-        style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}
-      />
+      {/* faixas decorativas na cor secundária da capa */}
+      <span aria-hidden className="absolute inset-x-0 top-2.5 h-[3px]" style={{ backgroundColor: palette.band }} />
+      <span aria-hidden className="absolute inset-x-0 top-[17px] h-px opacity-70" style={{ backgroundColor: palette.band }} />
+      <span aria-hidden className="absolute inset-x-0 bottom-3 h-[3px]" style={{ backgroundColor: palette.band }} />
 
-      {/* Title (vertical) */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 origin-center -translate-x-1/2 -translate-y-1/2 -rotate-90 whitespace-nowrap px-1"
-        style={{ color: textColor }}
+      {/* título, de baixo para cima como nas lombadas brasileiras */}
+      <span
+        aria-hidden
+        className="absolute inset-x-0 top-6 flex items-center justify-center overflow-hidden"
+        style={{ bottom: showAuthor ? 58 : 22 }}
       >
         <span
-          className="block truncate text-xs font-semibold leading-tight tracking-wide"
-          style={{ maxWidth: '130px', textShadow }}
+          className="font-fraunces overflow-hidden text-center text-[10.5px] font-semibold"
+          style={{
+            color: palette.text,
+            writingMode: 'vertical-rl',
+            transform: 'rotate(180deg)',
+            lineHeight: `${TITLE_LINE}px`,
+            // só cabem colunas inteiras: evita uma linha cortada pela metade
+            width: Math.max(1, Math.floor((width - 4) / TITLE_LINE)) * TITLE_LINE,
+            maxHeight: '100%',
+          }}
         >
           {title}
         </span>
-      </div>
+      </span>
 
-      {/* Author initial at bottom */}
-      {authors[0] && (
-        <div
-          className="pointer-events-none absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[9px] font-bold opacity-50"
-          style={{ color: textColor, textShadow }}
-        >
-          {authors[0].charAt(0).toUpperCase()}
-        </div>
+      {/* sobrenome do autor no pé da lombada */}
+      {showAuthor && (
+        <span aria-hidden className="absolute inset-x-0 bottom-[19px] flex h-9 items-center justify-center overflow-hidden">
+          <span
+            className="text-[8px] leading-none font-semibold tracking-wide whitespace-nowrap uppercase opacity-75"
+            style={{ color: palette.text, writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+          >
+            {author}
+          </span>
+        </span>
       )}
     </motion.button>
   )
-}
-
-// Helper function to determine if a color is light or dark
-function isLightColor(color: string): boolean {
-  const hex = color.replace('#', '')
-  if (hex.length !== 6) return false
-
-  const r = parseInt(hex.substr(0, 2), 16)
-  const g = parseInt(hex.substr(2, 2), 16)
-  const b = parseInt(hex.substr(4, 2), 16)
-
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-  return luminance > 0.5
 }

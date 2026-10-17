@@ -10,7 +10,9 @@ import {
   addBookSchema,
   updateUserBookSchema,
   createAnnotationSchema,
+  updateReadingProgressSchema,
   type AddBookInput,
+  type UpdateReadingProgressInput,
   type UpdateUserBookInput,
   type CreateAnnotationInput,
 } from '@/lib/validators/book'
@@ -198,6 +200,58 @@ export async function updateUserBook(input: UpdateUserBookInput): Promise<Action
       success: false,
       error: 'Erro ao atualizar livro',
     }
+  }
+}
+
+/**
+ * Atualiza a página atual de um livro em leitura e soma o avanço do dia no ReadingLog,
+ * que alimenta o calendário e as estatísticas.
+ */
+export async function updateReadingProgress(
+  input: UpdateReadingProgressInput
+): Promise<ActionResult<{ currentPage: number; reachedEnd: boolean }>> {
+  try {
+    const user = await getAuthenticatedUser()
+    const validated = updateReadingProgressSchema.parse(input)
+
+    const userBook = await db.userBook.findUnique({
+      where: { id: validated.userBookId },
+      include: { book: { select: { pageCount: true } } },
+    })
+
+    if (!userBook || userBook.userId !== user.id) {
+      return { success: false, error: 'Livro não encontrado' }
+    }
+
+    const pageCount = userBook.book.pageCount
+    const currentPage = pageCount ? Math.min(validated.currentPage, pageCount) : validated.currentPage
+    const delta = currentPage - (userBook.currentPage ?? 0)
+
+    await db.userBook.update({
+      where: { id: userBook.id },
+      data: { currentPage },
+    })
+
+    if (delta > 0) {
+      const now = new Date()
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      await db.readingLog.upsert({
+        where: { userBookId_date: { userBookId: userBook.id, date: today } },
+        update: { pagesRead: { increment: delta } },
+        create: { userBookId: userBook.id, date: today, pagesRead: delta },
+      })
+    }
+
+    revalidatePath('/shelf')
+    revalidatePath('/stats')
+    revalidatePath(`/book/${userBook.bookId}`)
+    return {
+      success: true,
+      data: { currentPage, reachedEnd: !!pageCount && currentPage >= pageCount },
+    }
+  } catch (error) {
+    console.error('Error updating reading progress:', error)
+    return { success: false, error: 'Erro ao atualizar progresso' }
   }
 }
 

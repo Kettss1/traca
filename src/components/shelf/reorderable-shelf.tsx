@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
-import { Reorder, useDragControls, motion } from 'framer-motion'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
+import { Reorder, motion } from 'framer-motion'
 import { updateShelfOrder } from '@/lib/actions/book'
 import { AnimatedBookSpine } from './animated-book-spine'
+import { SHELF_INNER_HEIGHT, packIntoRows, spineWidth } from './spine-style'
 
 interface BookData {
   id: string
@@ -21,159 +22,130 @@ interface BookData {
 
 interface ReorderableShelfProps {
   books: BookData[]
-  booksPerShelf?: number
   onBookClick: (bookId: string) => void
 }
 
-export function ReorderableShelf({
-  books,
-  booksPerShelf = 12,
-  onBookClick,
-}: ReorderableShelfProps) {
+const SHELF_PADDING_X = 20
+
+export function ReorderableShelf({ books, onBookClick }: ReorderableShelfProps) {
   const [items, setItems] = useState(books)
+  const [prevBooks, setPrevBooks] = useState(books)
   const [isDragging, setIsDragging] = useState(false)
+  const [width, setWidth] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const latestItems = useRef(items)
 
-  // Sync items when books prop changes (filters, new books added, etc.)
-  useEffect(() => {
+  // filtros/ordenação mudam a lista vinda de fora: sincroniza durante o render
+  if (books !== prevBooks) {
+    setPrevBooks(books)
     setItems(books)
-  }, [books])
+  }
 
-  // Debounced save function
-  const saveOrder = useCallback(
-    async (newItems: BookData[]) => {
-      const orderData = newItems.map((item, index) => ({
-        userBookId: item.id,
-        position: index,
-      }))
-      await updateShelfOrder(orderData)
-    },
-    []
+  useEffect(() => {
+    latestItems.current = items
+  }, [items])
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const observer = new ResizeObserver(([entry]) => {
+      setWidth(Math.floor(entry.contentRect.width) - SHELF_PADDING_X * 2)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const rows = useMemo(
+    () => packIntoRows(items, width, (ub) => spineWidth(ub.book.pageCount)),
+    [items, width]
+  )
+  const rowStarts = useMemo(
+    () => rows.reduce<number[]>((starts, _row, i) => [...starts, i === 0 ? 0 : starts[i - 1] + rows[i - 1].length], []),
+    [rows]
   )
 
-  const handleReorder = (newItems: BookData[]) => {
-    setItems(newItems)
+  const saveOrder = useCallback(async (ordered: BookData[]) => {
+    await updateShelfOrder(ordered.map((item, index) => ({ userBookId: item.id, position: index })))
+  }, [])
+
+  // cada prateleira reordena só os próprios livros; a ordem global é remontada a partir dela
+  const handleRowReorder = (rowStart: number, rowLength: number, newRow: BookData[]) => {
+    setItems((prev) => [...prev.slice(0, rowStart), ...newRow, ...prev.slice(rowStart + rowLength)])
   }
 
   const handleDragEnd = () => {
     setIsDragging(false)
-    saveOrder(items)
-  }
-
-  // Split books into shelves
-  const shelves: BookData[][] = []
-  for (let i = 0; i < items.length; i += booksPerShelf) {
-    shelves.push(items.slice(i, i + booksPerShelf))
-  }
-
-  if (shelves.length === 0) {
-    shelves.push([])
+    // salva quando o usuário solta o livro, não a cada pixel arrastado
+    saveOrder(latestItems.current)
   }
 
   return (
-    <div className="space-y-0">
-      {shelves.map((shelfBooks, shelfIndex) => (
-        <div key={shelfIndex} className="relative">
-          {/* Shelf with books */}
-          <div className="relative flex h-48 items-end gap-1 px-4 pb-2">
-            {/* Back panel */}
-            <motion.div
-              className="absolute inset-0 rounded-t-sm"
-              style={{
-                background: 'linear-gradient(180deg, #5D4E3C 0%, #3D3228 100%)',
-                boxShadow: 'inset 0 -4px 8px rgba(0,0,0,0.3)',
-              }}
-              animate={{
-                boxShadow: isDragging
-                  ? 'inset 0 -4px 12px rgba(0,0,0,0.4), inset 0 0 20px rgba(76, 112, 82, 0.2)'
-                  : 'inset 0 -4px 8px rgba(0,0,0,0.3)',
-              }}
-            />
-
-            {/* Books - Only first shelf is reorderable for simplicity */}
-            {shelfIndex === 0 ? (
-              <Reorder.Group
-                axis="x"
-                values={items}
-                onReorder={handleReorder}
-                className="relative z-10 flex h-[160px] items-end gap-[2px]"
-              >
-                {shelfBooks.map((userBook) => (
-                  <ReorderableBook
-                    key={userBook.id}
-                    userBook={userBook}
-                    onDragStart={() => setIsDragging(true)}
-                    onDragEnd={handleDragEnd}
-                    onClick={() => onBookClick(userBook.book.id)}
-                  />
-                ))}
-              </Reorder.Group>
-            ) : (
-              <div className="relative z-10 flex h-[160px] items-end gap-[2px]">
-                {shelfBooks.map((userBook) => (
-                  <AnimatedBookSpine
-                    key={userBook.id}
-                    layoutId={`book-${userBook.book.id}`}
-                    title={userBook.book.title}
-                    authors={userBook.book.authors}
-                    colorPrimary={userBook.book.colorPrimary || undefined}
-                    colorSecondary={userBook.book.colorSecondary || undefined}
-                    pageCount={userBook.book.pageCount || undefined}
-                    onClick={() => onBookClick(userBook.book.id)}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Empty shelf message */}
-            {shelfBooks.length === 0 && (
-              <div className="relative z-10 flex h-full w-full items-center justify-center">
-                <p className="text-sm text-on-brand/60">Sua prateleira está vazia</p>
-              </div>
-            )}
-          </div>
-
-          {/* Shelf board */}
-          <div
-            className="relative h-4"
-            style={{
-              background: 'linear-gradient(180deg, #8B7355 0%, #6B5A47 50%, #5D4E3C 100%)',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
-            }}
-          >
+    <div ref={containerRef}>
+      {rows.map((rowBooks, rowIndex) => {
+        const rowStart = rowStarts[rowIndex]
+        return (
+          <div key={rowIndex} className="relative">
             <div
-              className="absolute inset-0 opacity-30"
+              className="relative flex items-end"
+              style={{ height: SHELF_INNER_HEIGHT + 12, paddingInline: SHELF_PADDING_X }}
+            >
+              {/* fundo da estante */}
+              <motion.div
+                aria-hidden
+                className="absolute inset-0"
+                style={{
+                  background:
+                    'repeating-linear-gradient(90deg, rgb(0 0 0 / 0.05) 0 1px, transparent 1px 46px), linear-gradient(180deg, #2c2017 0%, #3a2a1d 55%, #47331f 100%)',
+                }}
+                animate={{
+                  boxShadow: isDragging
+                    ? 'inset 0 10px 18px -8px rgb(0 0 0 / 0.6), inset 0 0 0 2px rgb(243 217 164 / 0.25)'
+                    : 'inset 0 10px 18px -8px rgb(0 0 0 / 0.6)',
+                }}
+                transition={{ duration: 0.2 }}
+              />
+
+              {rowBooks.length > 0 ? (
+                <Reorder.Group
+                  axis="x"
+                  values={rowBooks}
+                  onReorder={(newRow) => handleRowReorder(rowStart, rowBooks.length, newRow)}
+                  className="relative z-10 flex items-end"
+                  style={{ gap: 3, height: SHELF_INNER_HEIGHT }}
+                >
+                  {rowBooks.map((userBook) => (
+                    <ReorderableBook
+                      key={userBook.id}
+                      userBook={userBook}
+                      onDragStart={() => setIsDragging(true)}
+                      onDragEnd={handleDragEnd}
+                      onClick={() => onBookClick(userBook.book.id)}
+                    />
+                  ))}
+                </Reorder.Group>
+              ) : (
+                <p className="relative z-10 w-full self-center text-center text-sm text-[#e9d8bd]/70">
+                  Nenhum livro nesta prateleira
+                </p>
+              )}
+            </div>
+
+            {/* tábua */}
+            <div
+              aria-hidden
+              className="relative h-3.5"
               style={{
-                backgroundImage: `repeating-linear-gradient(
-                  90deg,
-                  transparent,
-                  transparent 20px,
-                  rgba(0,0,0,0.1) 20px,
-                  rgba(0,0,0,0.1) 21px
-                )`,
+                background: 'linear-gradient(180deg, #b8916a 0%, #9a7451 45%, #7c5b3e 100%)',
+                boxShadow: '0 6px 10px -2px rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.3)',
               }}
             />
           </div>
-
-          {/* Shelf brackets */}
-          <div className="absolute -bottom-2 left-4 h-6 w-3 rounded-b-sm bg-gradient-to-b from-[#5D4E3C] to-[#3D3228]" />
-          <div className="absolute -bottom-2 right-4 h-6 w-3 rounded-b-sm bg-gradient-to-b from-[#5D4E3C] to-[#3D3228]" />
-        </div>
-      ))}
-
-      {/* Drag hint */}
-      <motion.p
-        className="mt-4 text-center text-xs text-text-muted"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-      >
-        Arraste os livros para reorganizar sua estante
-      </motion.p>
+        )
+      })}
     </div>
   )
 }
 
-// Individual reorderable book item
 function ReorderableBook({
   userBook,
   onDragStart,
@@ -185,34 +157,25 @@ function ReorderableBook({
   onDragEnd: () => void
   onClick: () => void
 }) {
-  const controls = useDragControls()
   const wasDragged = useRef(false)
 
   return (
     <Reorder.Item
       value={userBook}
-      dragListener={true}
-      dragControls={controls}
       onDragStart={() => {
         wasDragged.current = true
         onDragStart()
       }}
       onDragEnd={() => {
         onDragEnd()
-        // Reset after a tick so the click handler can check it
-        requestAnimationFrame(() => { wasDragged.current = false })
+        // libera o clique só depois do evento de soltar
+        requestAnimationFrame(() => {
+          wasDragged.current = false
+        })
       }}
-      className="h-full"
-      whileDrag={{
-        scale: 1.05,
-        zIndex: 50,
-        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 300,
-        damping: 30,
-      }}
+      className="relative flex items-end"
+      whileDrag={{ scale: 1.04, zIndex: 50 }}
+      transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
     >
       <AnimatedBookSpine
         layoutId={`book-${userBook.book.id}`}

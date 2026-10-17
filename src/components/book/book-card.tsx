@@ -8,14 +8,14 @@ import { BookOpen, Plus, Check, Star, ArrowClockwise, BookmarkSimple, Book, Chec
 type ReadingStatus = 'WANT_TO_READ' | 'READING' | 'READ' | 'ABANDONED'
 
 const STATUS_CONFIG: Record<ReadingStatus, { label: string; className: string }> = {
-  WANT_TO_READ: { label: 'Quero Ler', className: 'bg-terracotta/10 text-terracotta' },
+  WANT_TO_READ: { label: 'Quero ler', className: 'bg-terracotta/10 text-terracotta' },
   READING: { label: 'Lendo', className: 'bg-green-deep text-on-brand' },
   READ: { label: 'Lido', className: 'bg-green-deep/10 text-green-deep' },
   ABANDONED: { label: 'Abandonado', className: 'bg-brown/10 text-text-muted' },
 }
 
 const ADD_STATUS_OPTIONS: { key: ReadingStatus; label: string; icon: typeof BookmarkSimple; color: string }[] = [
-  { key: 'WANT_TO_READ', label: 'Quero Ler', icon: BookmarkSimple, color: 'text-terracotta' },
+  { key: 'WANT_TO_READ', label: 'Quero ler', icon: BookmarkSimple, color: 'text-terracotta' },
   { key: 'READING', label: 'Lendo', icon: BookOpen, color: 'text-green-light' },
   { key: 'READ', label: 'Lido', icon: CheckCircle, color: 'text-green-deep' },
   { key: 'ABANDONED', label: 'Abandonado', icon: X, color: 'text-brown' },
@@ -32,6 +32,8 @@ export interface BookCardProps {
   status?: ReadingStatus
   rating?: number | null
   rereadCount?: number
+  /** página atual — quando presente com pageCount, mostra barra de progresso */
+  currentPage?: number | null
   onAdd?: (status: ReadingStatus) => void
   onClick?: () => void
   className?: string
@@ -48,6 +50,7 @@ export function BookCard({
   status,
   rating,
   rereadCount,
+  currentPage,
   onAdd,
   onClick,
   className,
@@ -69,8 +72,8 @@ export function BookCard({
   return (
     <div
       className={cn(
-        'group border-line flex gap-4 rounded-lg border bg-surface p-4 transition-all',
-        'hover:border-green-deep/30 hover:shadow-md',
+        'group border-line bg-surface flex gap-4 rounded-xl border p-3 transition-colors',
+        'hover:border-green-deep/30',
         onClick && 'cursor-pointer',
         className
       )}
@@ -78,8 +81,8 @@ export function BookCard({
     >
       {/* Cover */}
       <div
-        className="relative h-32 w-20 flex-shrink-0 overflow-hidden rounded-md shadow-sm"
-        style={{ backgroundColor: colorPrimary || '#e2e8f0' }}
+        className="relative h-24 w-16 flex-shrink-0 overflow-hidden rounded shadow-[0_4px_10px_-4px_rgb(0_0_0/0.35)]"
+        style={{ backgroundColor: colorPrimary || 'var(--cream-dark)' }}
       >
         {coverUrl ? (
           <Image
@@ -87,11 +90,11 @@ export function BookCard({
             alt={`Capa de ${title}`}
             fill
             className="object-cover"
-            sizes="80px"
+            sizes="64px"
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <BookOpen className="h-8 w-8 text-white/60" />
+            <BookOpen className="h-6 w-6 text-white/60" />
           </div>
         )}
       </div>
@@ -130,13 +133,27 @@ export function BookCard({
           {publisher && <p className="text-text-muted mt-1 text-xs">{publisher}</p>}
         </div>
 
+        {currentPage != null && pageCount ? (
+          <div className="mt-2 flex items-center gap-2">
+            <div className="bg-cream-dark h-1.5 flex-1 overflow-hidden rounded-full">
+              <div
+                className="bg-green-deep h-full rounded-full"
+                style={{ width: `${Math.min(100, (currentPage / pageCount) * 100)}%` }}
+              />
+            </div>
+            <span className="text-text-muted text-xs tabular-nums">
+              {Math.min(100, Math.round((currentPage / pageCount) * 100))}%
+            </span>
+          </div>
+        ) : null}
+
         <div className="mt-2 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {pageCount && <span className="text-text-muted text-xs">{pageCount} páginas</span>}
+            {pageCount && <span className="text-text-muted text-xs tabular-nums">{pageCount} páginas</span>}
             {rating !== undefined && rating !== null && rating > 0 && (
-              <span className="flex items-center gap-0.5 text-xs text-terracotta">
+              <span className="flex items-center gap-0.5 text-xs text-terracotta tabular-nums">
                 <Star className="h-3 w-3" weight="fill" />
-                {rating.toFixed(1)}
+                {rating.toLocaleString('pt-BR', { minimumFractionDigits: 1 })}
               </span>
             )}
           </div>

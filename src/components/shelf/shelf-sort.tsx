@@ -1,7 +1,6 @@
 'use client'
 
 import { SortAscending, SortDescending } from '@phosphor-icons/react'
-import { cn } from '@/lib/utils'
 
 export type SortField = 'title' | 'author' | 'createdAt' | 'rating'
 export type SortDirection = 'asc' | 'desc'
@@ -21,42 +20,43 @@ const SORT_OPTIONS: { value: SortField; label: string }[] = [
 
 export function ShelfSort({ sortField, sortDirection, onSortChange }: ShelfSortProps) {
   const handleFieldChange = (field: SortField) => {
-    if (field === sortField) {
-      // Toggle direction
-      onSortChange(field, sortDirection === 'asc' ? 'desc' : 'asc')
-    } else {
-      // Default to descending for dates/rating, ascending for text
-      const defaultDirection = field === 'createdAt' || field === 'rating' ? 'desc' : 'asc'
-      onSortChange(field, defaultDirection)
-    }
+    // datas e notas: maior primeiro; texto: A→Z
+    const defaultDirection = field === 'createdAt' || field === 'rating' ? 'desc' : 'asc'
+    onSortChange(field, defaultDirection)
   }
 
+  const directionLabel = sortDirection === 'asc' ? 'Ordem crescente' : 'Ordem decrescente'
+
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm text-text-muted">Ordenar:</span>
-      <div className="flex gap-1">
+    <div className="flex items-center gap-1">
+      <label htmlFor="shelf-sort" className="sr-only">
+        Ordenar por
+      </label>
+      <select
+        id="shelf-sort"
+        value={sortField}
+        onChange={(e) => handleFieldChange(e.target.value as SortField)}
+        className="border-line bg-surface text-text-dark focus:border-green-deep focus:ring-green-deep/20 h-10 rounded-lg border pr-8 pl-3 text-sm focus:ring-2 focus:outline-none"
+      >
         {SORT_OPTIONS.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => handleFieldChange(option.value)}
-            className={cn(
-              'flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm transition-colors',
-              sortField === option.value
-                ? 'bg-green-deep text-on-brand'
-                : 'bg-surface text-text-dark hover:bg-cream-dark'
-            )}
-          >
+          <option key={option.value} value={option.value}>
             {option.label}
-            {sortField === option.value && (
-              sortDirection === 'asc' ? (
-                <SortAscending className="h-4 w-4" />
-              ) : (
-                <SortDescending className="h-4 w-4" />
-              )
-            )}
-          </button>
+          </option>
         ))}
-      </div>
+      </select>
+      <button
+        type="button"
+        onClick={() => onSortChange(sortField, sortDirection === 'asc' ? 'desc' : 'asc')}
+        className="border-line bg-surface text-text-muted hover:text-text-dark flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
+        title={directionLabel}
+        aria-label={directionLabel}
+      >
+        {sortDirection === 'asc' ? (
+          <SortAscending className="h-5 w-5" />
+        ) : (
+          <SortDescending className="h-5 w-5" />
+        )}
+      </button>
     </div>
   )
 }
