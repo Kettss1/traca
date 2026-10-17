@@ -225,3 +225,54 @@ export async function searchUsers(query: string, currentUserId?: string, limit =
     isFollowing: followingSet.has(u.id),
   }))
 }
+
+/** O que as pessoas que o usuário segue estão lendo agora (para a lateral do feed). */
+export async function getFriendsReading(userId: string, limit = 5) {
+  const following = await db.follow.findMany({
+    where: { followerId: userId },
+    select: { followingId: true },
+  })
+  if (following.length === 0) return []
+
+  const reading = await db.userBook.findMany({
+    where: { userId: { in: following.map((f) => f.followingId) }, status: 'READING' },
+    select: {
+      id: true,
+      currentPage: true,
+      user: { select: { id: true, username: true, name: true, avatarUrl: true } },
+      book: {
+        select: { id: true, title: true, coverUrl: true, colorPrimary: true, pageCount: true },
+      },
+    },
+    orderBy: { updatedAt: 'desc' },
+    take: limit,
+  })
+
+  return reading
+}
+
+/** Leitores que o usuário ainda não segue, priorizando estantes maiores. */
+export async function getSuggestedReaders(userId: string, limit = 3) {
+  const following = await db.follow.findMany({
+    where: { followerId: userId },
+    select: { followingId: true },
+  })
+
+  const users = await db.user.findMany({
+    where: {
+      id: { notIn: [userId, ...following.map((f) => f.followingId)] },
+      username: { not: null },
+    },
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      avatarUrl: true,
+      _count: { select: { userBooks: true } },
+    },
+    orderBy: { userBooks: { _count: 'desc' } },
+    take: limit,
+  })
+
+  return users.map(({ _count, ...user }) => ({ ...user, booksCount: _count.userBooks }))
+}

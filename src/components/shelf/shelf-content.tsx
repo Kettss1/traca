@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { List, SquaresFour } from '@phosphor-icons/react'
+import { List, Books } from '@phosphor-icons/react'
 import { BookCard } from '@/components/book/book-card'
-import { ShelfFilters, ReadingStatus } from './shelf-filters'
+import { ShelfFilters, FiltersButton, ReadingStatus } from './shelf-filters'
+import { StatusChips } from './status-chips'
 import { ShelfSort, SortField, SortDirection } from './shelf-sort'
 import { ShelfSearch } from './shelf-search'
 import { AnimatedShelfView } from './animated-shelf-view'
@@ -45,7 +46,8 @@ interface ShelfContentProps {
 
 export function ShelfContent({ userBooks }: ShelfContentProps) {
   // View mode state
-  const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [viewMode, setViewMode] = useState<ViewMode>('shelf')
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -160,8 +162,19 @@ export function ShelfContent({ userBooks }: ShelfContentProps) {
     sortDirection,
   ])
 
+  const statusCounts = useMemo(() => {
+    const counts: Record<ReadingStatus, number> = { READING: 0, READ: 0, WANT_TO_READ: 0, ABANDONED: 0 }
+    userBooks.forEach((ub) => {
+      counts[ub.status] += 1
+    })
+    return counts
+  }, [userBooks])
+
+  const advancedFilterCount = [selectedAuthor, selectedPublisher, selectedCategory, selectedTag].filter(
+    Boolean
+  ).length
+
   const handleClearFilters = () => {
-    setSelectedStatus(null)
     setSelectedAuthor(null)
     setSelectedPublisher(null)
     setSelectedCategory(null)
@@ -175,67 +188,67 @@ export function ShelfContent({ userBooks }: ShelfContentProps) {
 
   return (
     <div className="space-y-6">
-      {/* Search and View Mode Toggle */}
-      <div className="flex gap-4">
-        <div className="flex-1">
+      <StatusChips
+        counts={statusCounts}
+        total={userBooks.length}
+        selected={selectedStatus}
+        onChange={setSelectedStatus}
+      />
+
+      {/* Busca, filtros, ordenação e modo de visualização */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="min-w-[200px] flex-1">
           <ShelfSearch value={searchQuery} onChange={setSearchQuery} />
         </div>
-        <div className="flex rounded-lg bg-white p-1 shadow-sm">
-          <button
-            onClick={() => setViewMode('list')}
-            className={cn(
-              'flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors',
-              viewMode === 'list'
-                ? 'bg-green-deep text-cream'
-                : 'text-text-muted hover:text-text-dark'
-            )}
-            title="Visualização em lista"
-          >
-            <List className="h-4 w-4" />
-            <span className="hidden sm:inline">Lista</span>
-          </button>
-          <button
-            onClick={() => setViewMode('shelf')}
-            className={cn(
-              'flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors',
-              viewMode === 'shelf'
-                ? 'bg-green-deep text-cream'
-                : 'text-text-muted hover:text-text-dark'
-            )}
-            title="Visualização em estante"
-          >
-            <SquaresFour className="h-4 w-4" />
-            <span className="hidden sm:inline">Estante</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Filters and Sort */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <ShelfFilters
-          authors={filterOptions.authors}
-          publishers={filterOptions.publishers}
-          categories={filterOptions.categories}
-          tags={filterOptions.tags}
-          selectedStatus={selectedStatus}
-          selectedAuthor={selectedAuthor}
-          selectedPublisher={selectedPublisher}
-          selectedCategory={selectedCategory}
-          selectedTag={selectedTag}
-          onStatusChange={setSelectedStatus}
-          onAuthorChange={setSelectedAuthor}
-          onPublisherChange={setSelectedPublisher}
-          onCategoryChange={setSelectedCategory}
-          onTagChange={setSelectedTag}
-          onClearAll={handleClearFilters}
+        <FiltersButton
+          isExpanded={filtersOpen}
+          activeCount={advancedFilterCount}
+          onToggle={() => setFiltersOpen((open) => !open)}
         />
-
         <ShelfSort
           sortField={sortField}
           sortDirection={sortDirection}
           onSortChange={handleSortChange}
         />
+        <div className="border-line bg-surface flex h-10 rounded-lg border p-1" role="group" aria-label="Modo de visualização">
+          {([
+            { mode: 'shelf' as const, label: 'Estante', icon: Books },
+            { mode: 'list' as const, label: 'Lista', icon: List },
+          ]).map(({ mode, label, icon: Icon }) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setViewMode(mode)}
+              aria-pressed={viewMode === mode}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md px-2.5 text-sm transition-colors',
+                viewMode === mode ? 'bg-green-deep text-on-brand' : 'text-text-muted hover:text-text-dark'
+              )}
+              title={`Ver como ${label.toLowerCase()}`}
+            >
+              <Icon className="h-4 w-4" weight={viewMode === mode ? 'fill' : 'regular'} />
+              <span className="hidden sm:inline">{label}</span>
+            </button>
+          ))}
+        </div>
       </div>
+
+      <ShelfFilters
+        authors={filterOptions.authors}
+        publishers={filterOptions.publishers}
+        categories={filterOptions.categories}
+        tags={filterOptions.tags}
+        selectedAuthor={selectedAuthor}
+        selectedPublisher={selectedPublisher}
+        selectedCategory={selectedCategory}
+        selectedTag={selectedTag}
+        onAuthorChange={setSelectedAuthor}
+        onPublisherChange={setSelectedPublisher}
+        onCategoryChange={setSelectedCategory}
+        onTagChange={setSelectedTag}
+        onClearAll={handleClearFilters}
+        isExpanded={filtersOpen}
+      />
 
       {/* Results count */}
       {(searchQuery || selectedStatus || selectedAuthor || selectedPublisher || selectedCategory || selectedTag) && (
@@ -248,7 +261,7 @@ export function ShelfContent({ userBooks }: ShelfContentProps) {
       {/* Book display */}
       {filteredBooks.length > 0 ? (
         viewMode === 'list' ? (
-          <div className="space-y-4">
+          <div className="space-y-2">
             {filteredBooks.map((userBook) => {
               const rereadCount = (userBook._count?.rereads || 0) + 1
               return (
@@ -257,13 +270,12 @@ export function ShelfContent({ userBooks }: ShelfContentProps) {
                     title={userBook.book.title}
                     authors={userBook.book.authors}
                     coverUrl={userBook.book.coverUrl || undefined}
-                    publisher={userBook.book.publisher || undefined}
+                    currentPage={userBook.status === 'READING' ? userBook.currentPage : undefined}
                     pageCount={userBook.book.pageCount || undefined}
                     colorPrimary={userBook.book.colorPrimary || undefined}
                     status={userBook.status}
                     rating={userBook.rating}
                     rereadCount={rereadCount > 1 ? rereadCount : undefined}
-                    className="hover:scale-[1.01]"
                   />
                 </Link>
               )
@@ -273,7 +285,7 @@ export function ShelfContent({ userBooks }: ShelfContentProps) {
           <AnimatedShelfView books={filteredBooks} />
         )
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-brown/20 py-16">
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-line py-16">
           <p className="text-text-muted">Nenhum livro encontrado com os filtros selecionados.</p>
         </div>
       )}

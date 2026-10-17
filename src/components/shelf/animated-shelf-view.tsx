@@ -52,12 +52,12 @@ export function AnimatedShelfView({ books }: AnimatedShelfViewProps) {
 
   return (
     <LayoutGroup>
-      <div className="rounded-lg bg-[#2D2A26] p-6 shadow-lg">
-        <ReorderableShelf
-          books={books}
-          onBookClick={handleBookClick}
-        />
+      <div className="overflow-hidden rounded-2xl border-[10px] border-[#5a4029] bg-[#3a2a1d] shadow-[0_18px_40px_-20px_rgb(40_25_10/0.6)]">
+        <ReorderableShelf books={books} onBookClick={handleBookClick} />
       </div>
+      <p className="text-text-muted mt-3 text-center text-xs">
+        Arraste as lombadas para reorganizar · clique para abrir
+      </p>
 
       <BookModal
         book={selectedUserBook?.book || null}

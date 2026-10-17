@@ -45,7 +45,7 @@ export function TopAuthorsSlide({ topAuthor, topPublisher, topCategory }: TopAut
         initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-2xl font-bold"
+        className="font-fraunces text-3xl font-semibold"
       >
         Suas preferências
       </motion.h2>
@@ -60,15 +60,15 @@ export function TopAuthorsSlide({ topAuthor, topPublisher, topCategory }: TopAut
             className="rounded-xl bg-white/10 p-4 backdrop-blur-sm"
           >
             <div className="flex items-center gap-3">
-              <div className="rounded-full bg-green-light/20 p-2">
-                <item.icon className="h-5 w-5 text-green-light" weight="fill" />
+              <div className="rounded-full bg-white/15 p-2">
+                <item.icon className="h-5 w-5 text-[#f3d9a4]" weight="fill" />
               </div>
               <div className="flex-1 text-left">
                 <p className="text-xs uppercase tracking-wide text-white/60">{item.label}</p>
                 <p className="text-lg font-bold">{item.value}</p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-black text-green-light">{item.count}</p>
+                <p className="text-2xl font-fraunces font-semibold text-[#f3d9a4]">{item.count}</p>
                 <p className="text-xs text-white/60">
                   {item.count === 1 ? 'livro' : 'livros'}
                 </p>

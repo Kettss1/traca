@@ -135,7 +135,7 @@ export function BookModal({ book, userBook, isOpen, onClose }: BookModalProps) {
               transition={{ delay: 0.15 }}
             >
               {/* Header */}
-              <div className="flex items-start justify-between border-b border-brown/10 p-6">
+              <div className="flex items-start justify-between border-b border-line p-6">
                 <div className="flex-1 pr-4">
                   <motion.h2
                     className="font-fraunces text-2xl font-bold text-text-dark"
@@ -196,7 +196,7 @@ export function BookModal({ book, userBook, isOpen, onClose }: BookModalProps) {
                       {STATUS_LABELS[userBook.status] || userBook.status}
                     </span>
                     {userBook.rating && (
-                      <span className="flex items-center gap-1 text-amber-500">
+                      <span className="flex items-center gap-1 text-terracotta">
                         <Star weight="fill" className="h-4 w-4" />
                         {userBook.rating.toFixed(1)}
                       </span>
@@ -237,14 +237,14 @@ export function BookModal({ book, userBook, isOpen, onClose }: BookModalProps) {
 
               {/* Footer */}
               <motion.div
-                className="border-t border-brown/10 p-6"
+                className="border-t border-line p-6"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
                 <Link
                   href={`/book/${book.id}`}
-                  className="inline-flex items-center gap-2 rounded-lg bg-green-deep px-4 py-2 text-sm font-medium text-cream transition-colors hover:bg-green-deep/90"
+                  className="inline-flex items-center gap-2 rounded-lg bg-green-deep px-4 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-green-deep/90"
                   onClick={onClose}
                 >
                   Ver página completa

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getFeedPosts } from '@/lib/services/feed'
+import { getFriendsReading, getSuggestedReaders } from '@/lib/services/social'
 import { FeedContent } from '@/components/social/feed-content'
 
 export const metadata = {
@@ -15,9 +16,18 @@ export default async function FeedPage() {
     redirect('/login')
   }
 
-  const { posts } = await getFeedPosts(session.user.id, {
-    feedType: 'home',
-  })
+  const [{ posts }, friendsReading, suggestedReaders] = await Promise.all([
+    getFeedPosts(session.user.id, { feedType: 'home' }),
+    getFriendsReading(session.user.id),
+    getSuggestedReaders(session.user.id),
+  ])
 
-  return <FeedContent initialPosts={posts} userId={session.user.id} />
+  return (
+    <FeedContent
+      initialPosts={posts}
+      userId={session.user.id}
+      friendsReading={friendsReading}
+      suggestedReaders={suggestedReaders}
+    />
+  )
 }

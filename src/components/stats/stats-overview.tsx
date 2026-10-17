@@ -1,87 +1,47 @@
-import { Books, BookOpen, Clock, CurrencyDollar, Star, ArrowClockwise } from '@phosphor-icons/react/dist/ssr'
+import { Star } from '@phosphor-icons/react/dist/ssr'
 import type { ReadingStats } from '@/lib/services/stats'
 
 interface StatsOverviewProps {
   stats: ReadingStats
 }
 
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
+const num = new Intl.NumberFormat('pt-BR')
+
 export function StatsOverview({ stats }: StatsOverviewProps) {
+  // Dois números principais; o resto vira uma linha de apoio
+  const secondary = [
+    `${stats.totalBooks} na estante`,
+    stats.pagesRead > 0 ? `${num.format(stats.pagesRead)} páginas lidas` : null,
+    stats.totalSpent > 0 ? `${brl.format(stats.totalSpent)} em livros` : null,
+    stats.totalRereads > 0 ? `${stats.totalRereads} ${stats.totalRereads === 1 ? 'releitura' : 'releituras'}` : null,
+  ].filter(Boolean)
+
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-      <StatCard
-        icon={Books}
-        label="Total de Livros"
-        value={stats.totalBooks}
-        iconColor="text-green-deep"
-        iconBg="bg-green-deep/10"
-      />
-      <StatCard
-        icon={BookOpen}
-        label="Livros Lidos"
-        value={stats.booksRead}
-        iconColor="text-green-light"
-        iconBg="bg-green-light/10"
-      />
-      <StatCard
-        icon={Clock}
-        label="Horas de Leitura"
-        value={`~${stats.estimatedHours}h`}
-        iconColor="text-terracotta"
-        iconBg="bg-terracotta/10"
-      />
-      <StatCard
-        icon={Star}
-        label="Avaliação Média"
-        value={stats.ratedBooks > 0 ? stats.averageRating.toFixed(1) : '-'}
-        subtitle={stats.ratedBooks > 0 ? `${stats.ratedBooks} avaliados` : undefined}
-        iconColor="text-terracotta-light"
-        iconBg="bg-terracotta-light/10"
-      />
-      <StatCard
-        icon={CurrencyDollar}
-        label="Valor Total"
-        value={new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-          maximumFractionDigits: 0,
-        }).format(stats.totalSpent)}
-        iconColor="text-brown"
-        iconBg="bg-brown/10"
-      />
-      <StatCard
-        icon={ArrowClockwise}
-        label="Releituras"
-        value={stats.totalRereads}
-        iconColor="text-green-accent"
-        iconBg="bg-green-accent/10"
-      />
-    </div>
+    <section className="card p-6" aria-label="Resumo">
+      <div className="grid grid-cols-3 gap-4 sm:gap-6">
+        <BigNumber value={num.format(stats.booksRead)} label={stats.booksRead === 1 ? 'livro lido' : 'livros lidos'} />
+        <BigNumber value={`~${num.format(stats.estimatedHours)}h`} label="de leitura" />
+        <div>
+          <p className="font-fraunces text-text-dark flex items-baseline gap-2 text-3xl leading-none font-semibold tabular-nums sm:text-5xl">
+            {stats.ratedBooks > 0 ? stats.averageRating.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) : '–'}
+            <Star className="text-terracotta h-5 w-5 self-center sm:h-7 sm:w-7" weight="fill" />
+          </p>
+          <p className="text-text-muted mt-2 text-xs sm:text-sm">
+            nota média{stats.ratedBooks > 0 && ` · ${stats.ratedBooks} avaliados`}
+          </p>
+        </div>
+      </div>
+      <p className="border-line text-text-muted mt-6 border-t pt-4 text-sm">{secondary.join(' · ')}</p>
+    </section>
   )
 }
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  subtitle,
-  iconColor,
-  iconBg,
-}: {
-  icon: typeof Books
-  label: string
-  value: string | number
-  subtitle?: string
-  iconColor: string
-  iconBg: string
-}) {
+function BigNumber({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-4">
-      <div className={`inline-flex rounded-xl p-2 ${iconBg}`}>
-        <Icon className={`h-5 w-5 ${iconColor}`} weight="fill" />
-      </div>
-      <p className="mt-3 text-2xl font-bold tabular-nums text-text-dark">{value}</p>
-      <p className="mt-0.5 text-xs text-text-muted">{label}</p>
-      {subtitle && <p className="text-[11px] text-text-muted">{subtitle}</p>}
+    <div>
+      <p className="font-fraunces text-green-deep text-3xl leading-none font-semibold tabular-nums sm:text-5xl">{value}</p>
+      <p className="text-text-muted mt-2 text-xs sm:text-sm">{label}</p>
     </div>
   )
 }

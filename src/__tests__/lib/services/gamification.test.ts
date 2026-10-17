@@ -7,6 +7,7 @@ import {
   getUserAchievements,
   getLeaderboard,
   getUserPointsHistory,
+  requirementProgress,
 } from '@/lib/services/gamification'
 
 beforeEach(() => {
@@ -184,5 +185,27 @@ describe('getUserPointsHistory', () => {
       orderBy: { createdAt: 'desc' },
       take: 20,
     })
+  })
+})
+
+describe('requirementProgress', () => {
+  const stats = {
+    booksCount: 18, booksReadCount: 11, pagesRead: 3208, followersCount: 2, followingCount: 2,
+    annotationsCount: 0, quotesSharedCount: 0, points: 840, streak: 1, accountAgeDays: 9,
+  }
+
+  it('calcula atual e alvo para requisito único', () => {
+    expect(requirementProgress({ booksRead: 100 }, stats)).toEqual({ current: 11, target: 100 })
+  })
+
+  it('limita o atual ao alvo', () => {
+    expect(requirementProgress({ pagesRead: 1000 }, stats)).toEqual({ current: 1000, target: 1000 })
+  })
+
+  it('ignora requisitos compostos, vazios ou desconhecidos', () => {
+    expect(requirementProgress({}, stats)).toBeNull()
+    expect(requirementProgress({ booksRead: 1, points: 10 }, stats)).toBeNull()
+    expect(requirementProgress({ algoNovo: 3 }, stats)).toBeNull()
+    expect(requirementProgress(null, stats)).toBeNull()
   })
 })

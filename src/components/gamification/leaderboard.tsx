@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Trophy, Books, FileText } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
+import { Avatar } from '@/components/ui/avatar'
 
 type LeaderboardType = 'points' | 'books' | 'pages'
 
@@ -24,11 +24,8 @@ interface LeaderboardProps {
   pagesData: LeaderboardEntry[]
 }
 
-const MEDAL_COLORS = [
-  'bg-terracotta-light text-white',
-  'bg-text-muted/30 text-text-dark',
-  'bg-brown/30 text-brown',
-]
+// ouro, prata, bronze
+const MEDAL_COLORS = ['bg-[#c99a2e] text-white', 'bg-[#9c958d] text-white', 'bg-[#a9714b] text-white']
 
 export function Leaderboard({ pointsData, booksData, pagesData }: LeaderboardProps) {
   const [activeTab, setActiveTab] = useState<LeaderboardType>('points')
@@ -49,8 +46,8 @@ export function Leaderboard({ pointsData, booksData, pagesData }: LeaderboardPro
   }
 
   return (
-    <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-text-muted">
+    <div className="card p-5">
+      <h2 className="section-title mb-4">
         Ranking
       </h2>
 
@@ -67,7 +64,7 @@ export function Leaderboard({ pointsData, booksData, pagesData }: LeaderboardPro
             className={cn(
               'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-medium transition-all',
               activeTab === key
-                ? 'bg-cream text-green-deep shadow-sm'
+                ? 'bg-surface text-green-deep shadow-sm'
                 : 'text-text-muted hover:text-text-dark'
             )}
           >
@@ -82,7 +79,7 @@ export function Leaderboard({ pointsData, booksData, pagesData }: LeaderboardPro
         {data.map((entry, index) => (
           <div
             key={entry.id}
-            className="flex items-center gap-2.5 rounded-xl bg-cream-dark/30 p-2.5"
+            className="flex items-center gap-2.5 rounded-xl p-2"
           >
             <div
               className={cn(
@@ -94,19 +91,7 @@ export function Leaderboard({ pointsData, booksData, pagesData }: LeaderboardPro
             </div>
 
             <Link href={`/profile/${entry.username}`} className="flex min-w-0 flex-1 items-center gap-2">
-              {entry.avatarUrl ? (
-                <Image
-                  src={entry.avatarUrl}
-                  alt={entry.name || entry.username || 'Avatar'}
-                  width={28}
-                  height={28}
-                  className="h-7 w-7 shrink-0 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-deep/10 text-xs font-medium text-green-deep">
-                  {(entry.name || entry.username || 'U')[0].toUpperCase()}
-                </div>
-              )}
+              <Avatar id={entry.id} name={entry.name || entry.username} src={entry.avatarUrl} size={28} />
               <span className="truncate text-sm font-medium text-text-dark hover:text-green-deep">
                 {entry.name || entry.username}
               </span>

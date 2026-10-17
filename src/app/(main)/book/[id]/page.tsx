@@ -198,7 +198,7 @@ export default async function BookPage({ params }: BookPageProps) {
 
           {/* User actions */}
           {userBook && (
-            <div className="mt-6 space-y-4 rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+            <div className="mt-6 space-y-4 card p-5">
               <div>
                 <h3 className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-text-muted">Status</h3>
                 <StatusSelector
@@ -216,7 +216,7 @@ export default async function BookPage({ params }: BookPageProps) {
                 />
               </div>
 
-              <div className="border-t border-cream-dark/80 pt-4">
+              <div className="border-t border-line pt-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">Avaliação</span>
                   <RatingStars userBookId={userBook.id} currentRating={userBook.rating} />
@@ -227,12 +227,12 @@ export default async function BookPage({ params }: BookPageProps) {
 
               {/* Reread button - only show if book is finished */}
               {userBook.status === 'READ' && (
-                <div className="border-t border-cream-dark/80 pt-4">
+                <div className="border-t border-line pt-4">
                   <RereadButton userBookId={userBook.id} />
                 </div>
               )}
 
-              <div className="border-t border-cream-dark/80 pt-4">
+              <div className="border-t border-line pt-4">
                 <RemoveFromShelfButton userBookId={userBook.id} bookTitle={book.title} />
               </div>
             </div>
@@ -244,7 +244,7 @@ export default async function BookPage({ params }: BookPageProps) {
       {userBook && (
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           {/* Book details form */}
-          <div className="rounded-lg bg-white p-4 shadow-sm">
+          <div className="card p-4">
             <BookDetailsForm
               userBookId={userBook.id}
               currentPage={userBook.currentPage}
@@ -259,7 +259,7 @@ export default async function BookPage({ params }: BookPageProps) {
 
           {/* Reading history */}
           {allReadings.length > 1 && (
-            <div className="rounded-lg bg-white p-4 shadow-sm">
+            <div className="card p-4">
               <ReadingHistory readings={allReadings} />
             </div>
           )}

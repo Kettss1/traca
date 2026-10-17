@@ -33,7 +33,7 @@ export default function BookLoading() {
           </div>
 
           {/* User actions */}
-          <div className="mt-6 space-y-4 rounded-lg bg-white p-4 shadow-sm">
+          <div className="mt-6 space-y-4 card p-4">
             <div className="flex items-center justify-between">
               <Skeleton className="h-5 w-14" />
               <Skeleton className="h-8 w-24" />

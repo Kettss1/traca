@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { Avatar } from '@/components/ui/avatar'
 import { CaretLeft, User } from '@phosphor-icons/react/dist/ssr'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -38,19 +38,19 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
       <div className="mb-6">
         <Link
           href={`/profile/${username}`}
-          className="inline-flex items-center gap-2 text-text-muted hover:text-text-dark dark:hover:text-white"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-text-dark"
         >
           <CaretLeft className="h-5 w-5" />
           Voltar para o perfil
         </Link>
       </div>
 
-      <h1 className="font-fraunces mb-6 text-2xl font-bold text-text-dark dark:text-white">
+      <h1 className="font-fraunces mb-6 text-2xl font-bold text-text-dark">
         Seguidores de {user.name || user.username}
       </h1>
 
       {followers.length === 0 ? (
-        <div className="rounded-lg bg-white p-8 text-center shadow-sm dark:bg-gray-800">
+        <div className="card p-8 text-center">
           <User className="mx-auto h-12 w-12 text-text-muted" />
           <p className="mt-4 text-text-muted">Nenhum seguidor ainda</p>
         </div>
@@ -59,28 +59,16 @@ export default async function FollowersPage({ params }: FollowersPageProps) {
           {followers.map((follower) => (
             <div
               key={follower.id}
-              className="flex items-center gap-3 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+              className="flex items-center gap-3 card p-4"
             >
               <Link href={`/profile/${follower.username}`}>
-                {follower.avatarUrl ? (
-                  <Image
-                    src={follower.avatarUrl}
-                    alt={follower.name || follower.username || 'Avatar'}
-                    width={48}
-                    height={48}
-                    className="rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-light/20 text-lg text-green-deep">
-                    {(follower.name || follower.username || 'U')[0].toUpperCase()}
-                  </div>
-                )}
+                <Avatar id={follower.id} name={follower.name || follower.username} src={follower.avatarUrl} size={48} />
               </Link>
 
               <div className="flex-1">
                 <Link
                   href={`/profile/${follower.username}`}
-                  className="font-medium text-text-dark hover:underline dark:text-white"
+                  className="font-medium text-text-dark hover:underline"
                 >
                   {follower.name || follower.username}
                 </Link>

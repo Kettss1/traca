@@ -55,7 +55,7 @@ export function AnnotationForm({ userBookId }: AnnotationFormProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-brown/20 py-4 text-sm text-text-muted transition-colors hover:border-green-deep/30 hover:text-green-deep"
+        className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-line py-4 text-sm text-text-muted transition-colors hover:border-green-deep/30 hover:text-green-deep"
       >
         <Plus className="h-5 w-5" />
         Adicionar anotação ou citação
@@ -64,7 +64,7 @@ export function AnnotationForm({ userBookId }: AnnotationFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-brown/10 bg-white p-4">
+    <form onSubmit={handleSubmit} className="rounded-lg border border-line bg-surface p-4">
       {/* Type selector */}
       <div className="mb-4 flex gap-2">
         <button
@@ -73,7 +73,7 @@ export function AnnotationForm({ userBookId }: AnnotationFormProps) {
           className={cn(
             'flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-medium transition-colors',
             type === 'NOTE'
-              ? 'bg-green-deep text-cream'
+              ? 'bg-green-deep text-on-brand'
               : 'bg-cream-dark text-text-muted hover:text-text-dark'
           )}
         >
@@ -86,7 +86,7 @@ export function AnnotationForm({ userBookId }: AnnotationFormProps) {
           className={cn(
             'flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-sm font-medium transition-colors',
             type === 'QUOTE'
-              ? 'bg-terracotta text-cream'
+              ? 'bg-terracotta text-on-brand'
               : 'bg-cream-dark text-text-muted hover:text-text-dark'
           )}
         >
@@ -115,7 +115,7 @@ export function AnnotationForm({ userBookId }: AnnotationFormProps) {
           rows={4}
           className={cn(
             'w-full resize-none rounded-lg border px-3 py-2 text-sm transition-colors',
-            'border-brown/20 text-text-dark placeholder:text-text-muted',
+            'border-line text-text-dark placeholder:text-text-muted',
             'focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20'
           )}
         />

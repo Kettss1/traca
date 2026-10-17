@@ -1,33 +1,68 @@
 @import 'tailwindcss';
 
-:root {
-  /* background */
-  --cream: #fdf6e9;
-  --cream-dark: #f5ebd6;
+/* next-themes aplica a classe .dark no <html>; sem isso o Tailwind 4 usaria prefers-color-scheme */
+@custom-variant dark (&:where(.dark, .dark *));
 
-  /* green tones */
+:root {
+  /* fundo e superfícies */
+  --cream: #faf4e8;
+  --cream-dark: #f0e6d3;
+  --surface: #fffcf6;
+  --line: rgb(92 64 51 / 0.12);
+
+  /* verdes (marca / navegação) */
   --green-deep: #115e59;
   --green-light: #0f766e;
   --green-accent: #14b8a6;
 
-  /* highlights */
-  --terracotta: #c45c3e;
+  /* terracota (acento: avaliação, destaque, ação secundária) */
+  --terracotta: #b9532f;
   --terracotta-light: #e07a5f;
 
-  /* neutrals */
+  /* neutros */
   --brown: #5c4033;
-  --text-dark: #2c2416;
-  --text-muted: #6b5d4d;
+  --text-dark: #2a2118;
+  --text-muted: #6e6052;
+
+  /* texto sobre verde / terracota — fixo nos dois temas */
+  --on-brand: #fdf8ee;
+
+  --shadow-card: 0 1px 2px rgb(60 40 20 / 0.05), 0 4px 16px -8px rgb(60 40 20 / 0.12);
+}
+
+.dark {
+  --cream: #16120e;
+  --cream-dark: #262019;
+  --surface: #1e1914;
+  --line: rgb(255 240 220 / 0.09);
+
+  --green-deep: #2c8273;
+  --green-light: #3a9a89;
+  --green-accent: #5fcdb8;
+
+  --terracotta: #e07a5f;
+  --terracotta-light: #f0a183;
+
+  --brown: #c9b6a2;
+  --text-dark: #efe6d8;
+  --text-muted: #a99b89;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+
+  color-scheme: dark;
 }
 
 @theme inline {
   --font-fraunces: var(--font-fraunces);
   --font-source-sans-3: var(--font-source-sans-3);
+  --font-sans: var(--font-source-sans-3), ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--cream);
   --color-foreground: var(--text-dark);
   --color-cream: var(--cream);
   --color-cream-dark: var(--cream-dark);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
   --color-green-deep: var(--green-deep);
   --color-green-light: var(--green-light);
   --color-green-accent: var(--green-accent);
@@ -36,10 +71,36 @@
   --color-brown: var(--brown);
   --color-text-dark: var(--text-dark);
   --color-text-muted: var(--text-muted);
+  --color-on-brand: var(--on-brand);
+
+  --shadow-card: var(--shadow-card);
+}
+
+/* Cartão padrão: uma superfície só para o app inteiro */
+@utility card {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+}
+
+/* Título de seção dentro de cards (substitui os rótulos em caixa alta) */
+@utility section-title {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--text-dark);
+  font-variation-settings: 'SOFT' 50;
 }
 
 body {
   background: var(--cream);
   color: var(--text-dark);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-source-sans-3), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-fraunces {
+  font-variation-settings: 'SOFT' 50;
+  letter-spacing: -0.01em;
 }

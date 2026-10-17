@@ -35,6 +35,7 @@ import {
   createAnnotation,
   deleteAnnotation,
   updateShelfOrder,
+  updateReadingProgress,
 } from '@/lib/actions/book'
 
 beforeEach(() => {
@@ -265,5 +266,57 @@ describe('updateShelfOrder', () => {
     const result = await updateShelfOrder(orderData)
 
     expect(result).toEqual({ success: false, error: 'Alguns livros não foram encontrados' })
+  })
+})
+
+describe('updateReadingProgress', () => {
+  const ubId = 'clxabc1230000abcdefghijk'
+
+  it('atualiza a página e soma o avanço do dia no log', async () => {
+    mockDb.userBook.findUnique.mockResolvedValueOnce({
+      id: ubId, userId: 'user-1', bookId: 'book-1', currentPage: 40, book: { pageCount: 200 },
+    })
+
+    const result = await updateReadingProgress({ userBookId: ubId, currentPage: 65 })
+
+    expect(result).toEqual({ success: true, data: { currentPage: 65, reachedEnd: false } })
+    expect(mockDb.userBook.update).toHaveBeenCalledWith({ where: { id: ubId }, data: { currentPage: 65 } })
+    expect(mockDb.readingLog.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        update: { pagesRead: { increment: 25 } },
+        create: expect.objectContaining({ pagesRead: 25 }),
+      })
+    )
+  })
+
+  it('limita ao total de páginas e avisa que chegou ao fim', async () => {
+    mockDb.userBook.findUnique.mockResolvedValueOnce({
+      id: ubId, userId: 'user-1', bookId: 'book-1', currentPage: 190, book: { pageCount: 200 },
+    })
+
+    const result = await updateReadingProgress({ userBookId: ubId, currentPage: 250 })
+
+    expect(result).toEqual({ success: true, data: { currentPage: 200, reachedEnd: true } })
+  })
+
+  it('não registra log quando a página volta', async () => {
+    mockDb.userBook.findUnique.mockResolvedValueOnce({
+      id: ubId, userId: 'user-1', bookId: 'book-1', currentPage: 100, book: { pageCount: 200 },
+    })
+
+    await updateReadingProgress({ userBookId: ubId, currentPage: 80 })
+
+    expect(mockDb.readingLog.upsert).not.toHaveBeenCalled()
+  })
+
+  it('recusa livro de outro usuário', async () => {
+    mockDb.userBook.findUnique.mockResolvedValueOnce({
+      id: ubId, userId: 'outro', bookId: 'book-1', currentPage: 0, book: { pageCount: 200 },
+    })
+
+    const result = await updateReadingProgress({ userBookId: ubId, currentPage: 10 })
+
+    expect(result.success).toBe(false)
+    expect(mockDb.userBook.update).not.toHaveBeenCalled()
   })
 })

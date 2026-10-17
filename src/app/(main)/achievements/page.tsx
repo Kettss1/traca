@@ -3,7 +3,6 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { getUserAchievements, getLeaderboard } from '@/lib/services/gamification'
 import { AchievementCard } from '@/components/gamification/achievement-card'
-import { PointsDisplay } from '@/components/gamification/points-display'
 import { Leaderboard } from '@/components/gamification/leaderboard'
 
 export const metadata = {
@@ -22,7 +21,7 @@ export default async function AchievementsPage() {
     await Promise.all([
       db.user.findUnique({
         where: { id: session.user.id },
-        select: { points: true, coins: true },
+        select: { points: true },
       }),
       getUserAchievements(session.user.id),
       getLeaderboard('points'),
@@ -37,6 +36,7 @@ export default async function AchievementsPage() {
         acc[category] = []
       }
       acc[category].push(achievement)
+      acc[category].sort((a, b) => Number(b.isEarned) - Number(a.isEarned) || b.progress - a.progress)
       return acc
     },
     {} as Record<string, typeof achievements>
@@ -59,7 +59,7 @@ export default async function AchievementsPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-fraunces text-2xl font-bold text-text-dark">
+          <h1 className="font-fraunces text-3xl font-bold text-text-dark">
             Conquistas
           </h1>
           <p className="mt-1 text-sm text-text-muted">
@@ -67,11 +67,18 @@ export default async function AchievementsPage() {
           </p>
         </div>
 
-        {user && <PointsDisplay points={user.points} coins={user.coins} />}
+        {user && (
+          <p className="text-text-muted text-sm">
+            <span className="font-fraunces text-green-deep text-3xl font-semibold tabular-nums">
+              {user.points.toLocaleString('pt-BR')}
+            </span>{' '}
+            pontos
+          </p>
+        )}
       </div>
 
       {/* Overall progress */}
-      <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-4">
+      <div className="card p-4">
         <div className="flex items-center justify-between text-sm">
           <span className="text-text-muted">Progresso geral</span>
           <span className="tabular-nums font-medium text-green-deep">
@@ -80,7 +87,7 @@ export default async function AchievementsPage() {
         </div>
         <div className="mt-2 h-2 rounded-full bg-cream-dark">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-green-deep to-green-accent transition-all"
+            className="h-full rounded-full bg-green-deep transition-all"
             style={{ width: `${totalCount > 0 ? (earnedCount / totalCount) * 100 : 0}%` }}
           />
         </div>
@@ -91,22 +98,24 @@ export default async function AchievementsPage() {
         <div className="space-y-6">
           {Object.entries(groupedAchievements).map(([category, categoryAchievements]) => (
             <div key={category}>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-text-muted">
+              <h2 className="section-title mb-3">
                 {categoryLabels[category] || category}
               </h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {categoryAchievements.map((achievement) => (
                   <AchievementCard
                     key={achievement.id}
+                    code={achievement.code}
                     name={achievement.name}
                     description={achievement.description}
                     icon={achievement.icon}
                     category={achievement.category}
                     points={achievement.points}
-                    coins={achievement.coins}
                     isEarned={achievement.isEarned}
                     earnedAt={achievement.earnedAt}
                     progress={achievement.progress}
+                    progressCurrent={achievement.progressCurrent}
+                    progressTarget={achievement.progressTarget}
                   />
                 ))}
               </div>

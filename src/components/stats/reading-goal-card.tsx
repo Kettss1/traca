@@ -52,9 +52,9 @@ export function ReadingGoalCard({ goal, year }: ReadingGoalCardProps) {
 
   if (isEditing) {
     return (
-      <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+      <div className="card p-5">
         <h3 className="mb-4 font-medium text-text-dark">
-          Meta de Leitura {year}
+          Meta de leitura {year}
         </h3>
         <div className="flex items-center gap-3">
           <label className="text-sm text-text-muted">Quero ler</label>
@@ -90,7 +90,7 @@ export function ReadingGoalCard({ goal, year }: ReadingGoalCardProps) {
   const isGoalReached = goal.current >= goal.target
 
   return (
-    <div className="rounded-2xl border border-cream-dark/80 bg-cream-dark/20 p-5">
+    <div className="card p-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="rounded-xl bg-green-deep/10 p-2.5">
@@ -98,7 +98,7 @@ export function ReadingGoalCard({ goal, year }: ReadingGoalCardProps) {
           </div>
           <div>
             <h3 className="font-medium text-text-dark">
-              Meta de Leitura {year}
+              Meta de leitura {year}
             </h3>
             <p className="text-sm text-text-muted">
               {goal.current} de {goal.target} livros

@@ -13,8 +13,8 @@ export function ThemeSelector() {
   return (
     <div className="space-y-8">
       {/* Color mode selector */}
-      <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-        <h2 className="mb-4 text-lg font-medium text-text-dark dark:text-white">
+      <div className="card p-6">
+        <h2 className="mb-4 text-lg font-medium text-text-dark">
           Modo de Cor
         </h2>
         <div className="flex gap-2">
@@ -24,11 +24,11 @@ export function ThemeSelector() {
               'flex flex-1 flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors',
               theme === 'light'
                 ? 'border-green-deep bg-green-light/10'
-                : 'border-brown/20 hover:border-green-deep/50 dark:border-gray-600'
+                : 'border-line hover:border-green-deep/50'
             )}
           >
             <Sun className="h-6 w-6 text-amber-500" />
-            <span className="text-sm font-medium text-text-dark dark:text-white">Claro</span>
+            <span className="text-sm font-medium text-text-dark">Claro</span>
             {theme === 'light' && <Check className="h-4 w-4 text-green-deep" />}
           </button>
           <button
@@ -37,11 +37,11 @@ export function ThemeSelector() {
               'flex flex-1 flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors',
               theme === 'dark'
                 ? 'border-green-deep bg-green-light/10'
-                : 'border-brown/20 hover:border-green-deep/50 dark:border-gray-600'
+                : 'border-line hover:border-green-deep/50'
             )}
           >
             <Moon className="h-6 w-6 text-indigo-400" />
-            <span className="text-sm font-medium text-text-dark dark:text-white">Escuro</span>
+            <span className="text-sm font-medium text-text-dark">Escuro</span>
             {theme === 'dark' && <Check className="h-4 w-4 text-green-deep" />}
           </button>
           <button
@@ -50,19 +50,19 @@ export function ThemeSelector() {
               'flex flex-1 flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors',
               theme === 'system'
                 ? 'border-green-deep bg-green-light/10'
-                : 'border-brown/20 hover:border-green-deep/50 dark:border-gray-600'
+                : 'border-line hover:border-green-deep/50'
             )}
           >
             <Monitor className="h-6 w-6 text-text-muted" />
-            <span className="text-sm font-medium text-text-dark dark:text-white">Sistema</span>
+            <span className="text-sm font-medium text-text-dark">Sistema</span>
             {theme === 'system' && <Check className="h-4 w-4 text-green-deep" />}
           </button>
         </div>
       </div>
 
       {/* Shelf theme selector */}
-      <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-        <h2 className="mb-4 text-lg font-medium text-text-dark dark:text-white">
+      <div className="card p-6">
+        <h2 className="mb-4 text-lg font-medium text-text-dark">
           Tema da Estante
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -100,7 +100,7 @@ function ShelfThemeCard({
         'relative overflow-hidden rounded-lg border-2 p-1 text-left transition-all',
         isSelected
           ? 'border-green-deep ring-2 ring-green-deep/20'
-          : 'border-brown/20 hover:border-green-deep/50 dark:border-gray-600',
+          : 'border-line hover:border-green-deep/50',
         isLocked && 'cursor-not-allowed opacity-60'
       )}
     >
@@ -135,7 +135,7 @@ function ShelfThemeCard({
       {/* Info */}
       <div className="p-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-text-dark dark:text-white">
+          <span className="text-sm font-medium text-text-dark">
             {theme.name}
           </span>
           {isSelected && <Check className="h-4 w-4 text-green-deep" />}

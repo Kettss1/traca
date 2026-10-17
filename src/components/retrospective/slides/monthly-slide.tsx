@@ -30,7 +30,7 @@ export function MonthlySlide({ booksPerMonth, mostProductiveMonth }: MonthlySlid
         initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="text-2xl font-bold"
+        className="font-fraunces text-3xl font-semibold"
       >
         Seu ano mês a mês
       </motion.h2>
@@ -52,7 +52,7 @@ export function MonthlySlide({ booksPerMonth, mostProductiveMonth }: MonthlySlid
             style={{ transformOrigin: 'bottom' }}
           >
             <div
-              className="w-5 rounded-t bg-green-light transition-all"
+              className="w-5 rounded-t bg-[#f3d9a4] transition-all"
               style={{
                 height: `${Math.max((count / maxBooks) * 80, count > 0 ? 8 : 2)}px`,
                 opacity: count === 0 ? 0.3 : 1,
@@ -70,12 +70,12 @@ export function MonthlySlide({ booksPerMonth, mostProductiveMonth }: MonthlySlid
           transition={{ delay: 0.9, duration: 0.5 }}
           className="flex items-center justify-center gap-3 rounded-xl bg-white/10 p-4 backdrop-blur-sm"
         >
-          <Trophy className="h-8 w-8 text-yellow-400" weight="fill" />
+          <Trophy className="h-8 w-8 text-[#f3d9a4]" weight="fill" />
           <div className="text-left">
             <p className="text-sm text-white/70">Mês mais produtivo</p>
             <p className="text-xl font-bold">
               {mostProductiveMonth.month}{' '}
-              <span className="text-green-light">
+              <span className="text-[#f3d9a4]">
                 ({mostProductiveMonth.count} {mostProductiveMonth.count === 1 ? 'livro' : 'livros'})
               </span>
             </p>

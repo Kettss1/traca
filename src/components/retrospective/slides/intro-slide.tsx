@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Book } from '@phosphor-icons/react'
 import { useReducedMotion } from '@/hooks/use-reduced-motion'
 
 interface IntroSlideProps {
@@ -12,41 +11,41 @@ export function IntroSlide({ year }: IntroSlideProps) {
   const reducedMotion = useReducedMotion()
 
   return (
-    <div className="space-y-8">
-      <motion.div
-        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5 }}
-        animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-        className="mx-auto w-fit rounded-full bg-white/10 p-6 backdrop-blur-sm"
-      >
-        <Book className="h-16 w-16 text-white" weight="fill" />
-      </motion.div>
-
-      <motion.div
-        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+    <div className="space-y-6">
+      <motion.p
+        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
+        transition={{ delay: 0.15, duration: 0.4 }}
+        className="text-lg tracking-wide text-white/80"
       >
-        <h1 className="text-5xl font-bold">Sua Retrospectiva</h1>
-        <p className="mt-2 text-6xl font-black text-green-light">{year}</p>
-      </motion.div>
+        Sua retrospectiva
+      </motion.p>
 
       <motion.p
-        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+        animate={reducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
+        transition={{ delay: 0.3, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+        className="font-fraunces text-[7rem] leading-none font-semibold text-[#f3d9a4] sm:text-[10rem]"
+      >
+        {year}
+      </motion.p>
+
+      <motion.p
+        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
         animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.5 }}
-        className="text-lg text-white/80"
+        transition={{ delay: 0.5, duration: 0.4 }}
+        className="text-xl text-white/90"
       >
         Vamos relembrar sua jornada literária neste ano?
       </motion.p>
 
       <motion.p
-        initial={reducedMotion ? { opacity: 0 } : { opacity: 0 }}
-        animate={reducedMotion ? { opacity: 1 } : { opacity: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.9, duration: 0.4 }}
         className="text-sm text-white/60"
       >
-        Toque para continuar
+        Toque ou use as setas para avançar
       </motion.p>
     </div>
   )

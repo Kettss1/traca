@@ -27,7 +27,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="rounded-xl bg-white p-8 shadow-sm">
+    <div className="card p-8">
       <div className="mb-8 text-center">
         <h1 className="font-fraunces text-text-dark text-2xl font-bold">Criar Conta</h1>
         <p className="text-text-muted mt-2">Comece a organizar suas leituras</p>
@@ -42,14 +42,14 @@ export default function RegisterPage() {
       </form>
 
       <div className="my-6 flex items-center gap-4">
-        <div className="bg-brown/20 h-px flex-1" />
+        <div className="bg-line h-px flex-1" />
         <span className="text-text-muted text-sm">ou</span>
-        <div className="bg-brown/20 h-px flex-1" />
+        <div className="bg-line h-px flex-1" />
       </div>
 
       {/* Email signup */}
       <form action={handleSubmit} className="space-y-4">
-        {error && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">{error}</div>}
+        {error && <div className="bg-terracotta/10 text-terracotta rounded-lg p-3 text-sm">{error}</div>}
 
         <div>
           <label htmlFor="name" className="text-text-dark mb-1 block text-sm font-medium">

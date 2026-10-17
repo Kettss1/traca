@@ -8,6 +8,7 @@ import { BookCard } from '@/components/book/book-card'
 import { track } from '@vercel/analytics'
 import { addBookToShelf } from '@/lib/actions/book'
 import { cn } from '@/lib/utils'
+import { spinePalette } from '@/components/shelf/spine-style'
 
 interface BookSearchResult {
   googleBooksId?: string
@@ -25,15 +26,21 @@ interface BookSearchResult {
   isbn13?: string
 }
 
+export interface SearchSuggestions {
+  popular: { id: string; title: string; authors: string[]; coverUrl: string | null; colorPrimary: string | null }[]
+  authors: string[]
+}
+
 interface BookSearchProps {
   userBookIds?: string[] // IDs of books already in shelf
+  suggestions?: SearchSuggestions
   onBookAdded?: () => void
   className?: string
 }
 
 type SearchMode = 'title' | 'author'
 
-export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSearchProps) {
+export function BookSearch({ userBookIds = [], suggestions, onBookAdded, className }: BookSearchProps) {
   const [query, setQuery] = useState('')
   const [mode, setMode] = useState<SearchMode>('title')
   const [searchedQuery, setSearchedQuery] = useState('')
@@ -108,6 +115,14 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
     setError(null)
   }
 
+  // atalho dos estados vazios: preenche a busca e dispara na hora
+  const runSuggestion = (text: string, newMode: SearchMode) => {
+    setMode(newMode)
+    setQuery(text)
+    search(text, newMode)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const handleAddBook = async (book: BookSearchResult, status: 'WANT_TO_READ' | 'READING' | 'READ' | 'ABANDONED') => {
     const bookId = book.googleBooksId || book.openLibraryKey || book.title
     setAddingBookId(bookId)
@@ -156,7 +171,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
           className={cn(
             'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
             mode === 'title'
-              ? 'bg-green-deep text-cream'
+              ? 'bg-green-deep text-on-brand'
               : 'bg-cream-dark text-text-muted hover:text-text-dark'
           )}
         >
@@ -169,7 +184,7 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
           className={cn(
             'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
             mode === 'author'
-              ? 'bg-green-deep text-cream'
+              ? 'bg-green-deep text-on-brand'
               : 'bg-cream-dark text-text-muted hover:text-text-dark'
           )}
         >
@@ -235,11 +250,71 @@ export function BookSearch({ userBookIds = [], onBookAdded, className }: BookSea
         </div>
       )}
 
-      {/* Initial state */}
+      {/* Estado inicial: sugestões em vez de tela vazia */}
       {!isLoading && !searchedQuery && results.length === 0 && (
-        <div className="text-text-muted mt-8 text-center">
-          <MagnifyingGlass className="mx-auto h-12 w-12 opacity-40" />
-          <p className="mt-4">Digite o nome de um livro ou autor para começar</p>
+        <div className="mt-10 space-y-10">
+          {suggestions && suggestions.popular.length > 0 && (
+            <section>
+              <h2 className="section-title mb-4">Populares entre leitores do Traça</h2>
+              <ul className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
+                {suggestions.popular.map((book) => (
+                  <li key={book.id}>
+                    <button
+                      type="button"
+                      onClick={() => runSuggestion(book.title, 'title')}
+                      className="group w-full text-left"
+                    >
+                      <span
+                        className="relative block aspect-[2/3] overflow-hidden rounded-md shadow-[0_8px_18px_-10px_rgb(0_0_0/0.45)] transition-transform duration-200 group-hover:-translate-y-1"
+                        style={{ backgroundColor: book.colorPrimary || 'var(--cream-dark)' }}
+                      >
+                        {book.coverUrl ? (
+                          // capa externa (Google Books / Open Library)
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={book.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+                        ) : (
+                          <span
+                            className="font-fraunces flex h-full items-center justify-center p-2 text-center text-sm"
+                            style={{ color: spinePalette(book.colorPrimary).text }}
+                          >
+                            {book.title}
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-text-dark mt-2 line-clamp-2 block text-sm font-medium">{book.title}</span>
+                      <span className="text-text-muted block truncate text-xs">{book.authors[0]}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {suggestions && suggestions.authors.length > 0 && (
+            <section>
+              <h2 className="section-title mb-4">Mais de quem você já lê</h2>
+              <div className="flex flex-wrap gap-2">
+                {suggestions.authors.map((author) => (
+                  <button
+                    key={author}
+                    type="button"
+                    onClick={() => runSuggestion(author, 'author')}
+                    className="border-line bg-surface text-text-dark hover:border-green-deep/40 flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors"
+                  >
+                    <User className="text-text-muted h-4 w-4" />
+                    {author}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {(!suggestions || (suggestions.popular.length === 0 && suggestions.authors.length === 0)) && (
+            <div className="text-text-muted text-center">
+              <MagnifyingGlass className="mx-auto h-12 w-12 opacity-40" />
+              <p className="mt-4">Digite o nome de um livro ou autor para começar</p>
+            </div>
+          )}
         </div>
       )}
     </div>

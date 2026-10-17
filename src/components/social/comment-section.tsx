@@ -81,7 +81,7 @@ export function CommentSection({ postId, currentUserId }: CommentSectionProps) {
         <button
           type="submit"
           disabled={isSubmitting || !newComment.trim()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-deep text-cream transition-colors hover:bg-green-light disabled:opacity-40"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-deep text-on-brand transition-colors hover:bg-green-light disabled:opacity-40"
         >
           <PaperPlaneRight className="h-4 w-4" />
         </button>

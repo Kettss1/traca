@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cn, validateEmail, formatDate, formatCurrency } from '@/lib/utils'
+import { cn, validateEmail, formatDate, formatCurrency, parseQuote } from '@/lib/utils'
 
 describe('cn', () => {
   it('combina classes simples', () => {
@@ -86,5 +86,32 @@ describe('formatCurrency', () => {
   it('formata em USD quando especificado', () => {
     const result = formatCurrency(42.5, 'en-US', 'USD')
     expect(result).toContain('$42.50')
+  })
+})
+
+describe('parseQuote', () => {
+  it('separa texto e autor e remove aspas externas', () => {
+    expect(parseQuote('"Viver é muito perigoso." — Guimarães Rosa')).toEqual({
+      text: 'Viver é muito perigoso.',
+      author: 'Guimarães Rosa',
+    })
+  })
+
+  it('aceita citação sem aspas e sem autor', () => {
+    expect(parseQuote('  Ler é sonhar pela mão de outrem  ')).toEqual({
+      text: 'Ler é sonhar pela mão de outrem',
+      author: null,
+    })
+  })
+
+  it('remove aspas curvas', () => {
+    expect(parseQuote('“Tudo no mundo começou com um sim.” – Clarice Lispector')).toEqual({
+      text: 'Tudo no mundo começou com um sim.',
+      author: 'Clarice Lispector',
+    })
+  })
+
+  it('não confunde hífen dentro de palavra com autoria', () => {
+    expect(parseQuote('"Bem-vindo ao fim do mundo"').author).toBeNull()
   })
 })

@@ -1,16 +1,18 @@
 'use client'
 
-import type { AuthorStats } from '@/lib/services/stats'
 
-interface AuthorChartProps {
-  data: AuthorStats[]
+
+interface RankedListProps {
+  data: { name: string; count: number }[]
+  emptyLabel: string
 }
 
-export function AuthorChart({ data }: AuthorChartProps) {
+/** Lista ranqueada com barra proporcional — autores, gêneros, editoras. */
+export function RankedList({ data, emptyLabel }: RankedListProps) {
   if (data.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center text-sm text-text-muted">
-        Nenhum autor registrado ainda
+      <div className="flex h-40 items-center justify-center text-sm text-text-muted">
+        {emptyLabel}
       </div>
     )
   }
@@ -39,7 +41,7 @@ export function AuthorChart({ data }: AuthorChartProps) {
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${(author.count / maxCount) * 100}%`,
-                  backgroundColor: `color-mix(in srgb, #115e59 ${100 - index * 15}%, #14b8a6)`,
+                  backgroundColor: `color-mix(in srgb, var(--green-deep) ${100 - index * 15}%, var(--green-accent))`,
                 }}
               />
             </div>

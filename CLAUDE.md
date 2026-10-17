@@ -102,7 +102,7 @@ src/
 
 ### Git
 
-- Commits em português, formato: `feat: adiciona busca de livros`, `fix: corrige filtro por autor`.
+- Commits, PRs e comentários em **inglês**, formato: `feat: add book search`, `fix: author filter`.
 - Branches: `feat/nome-da-feature`, `fix/descricao-do-bug`, `chore/tarefa`.
 
 ---
@@ -385,7 +385,7 @@ Skoob não permite marcar releitura — frustração real da comunidade.
 ## Notas Importantes
 
 - **Idioma do app:** Português brasileiro (pt-BR). Toda a interface é em português.
-- **Idioma do código:** Inglês (variáveis, funções, componentes, commits podem ser em PT).
+- **Idioma do código:** Inglês (variáveis, funções, componentes, commits, PRs e comentários de revisão).
 - **Gamificação:** Planejada para fase futura. Não implementar agora, mas o modelo de dados deve ser extensível (campo `points` no User, tabela `Achievement` pode ser adicionada depois).
 - **Link de afiliado Amazon:** Não é prioridade. Ignorar por enquanto.
 - **Modo escuro:** Obrigatório para o público leitor (leitura noturna). Implementar com Tailwind `dark:` classes. Usar `next-themes` para toggle e persistência. Planejar desde o início — definir tokens de cor com CSS variables para light e dark.

@@ -58,6 +58,11 @@ export const updateUserBookSchema = z.object({
   tags: z.array(z.string()).optional(),
 })
 
+export const updateReadingProgressSchema = z.object({
+  userBookId: z.string().cuid(),
+  currentPage: z.number().int().min(0).max(20000),
+})
+
 export const createAnnotationSchema = z.object({
   userBookId: z.string().cuid(),
   type: z.enum(['NOTE', 'QUOTE']),
@@ -71,5 +76,6 @@ export const searchBooksSchema = z.object({
 
 export type AddBookInput = z.infer<typeof addBookSchema>
 export type UpdateUserBookInput = z.infer<typeof updateUserBookSchema>
+export type UpdateReadingProgressInput = z.infer<typeof updateReadingProgressSchema>
 export type CreateAnnotationInput = z.infer<typeof createAnnotationSchema>
 export type ReadingStatus = z.infer<typeof readingStatusSchema>

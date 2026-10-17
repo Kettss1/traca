@@ -22,7 +22,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           'disabled:pointer-events-none disabled:opacity-50',
           {
             // Variants
-            'bg-green-deep text-cream hover:bg-green-deep/90 focus-visible:ring-green-deep':
+            'bg-green-deep text-on-brand hover:bg-green-deep/90 focus-visible:ring-green-deep':
               variant === 'primary',
             'bg-cream text-green-deep border-green-deep hover:bg-cream-dark focus-visible:ring-green-deep border':
               variant === 'secondary',

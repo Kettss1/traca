@@ -85,7 +85,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Avatar section */}
-      <div className="rounded-lg bg-white p-6 shadow-sm">
+      <div className="card p-6">
         <h2 className="mb-4 text-lg font-medium text-text-dark">Foto de Perfil</h2>
         <div className="flex items-center gap-4">
           <div className="relative h-20 w-20 overflow-hidden rounded-full bg-cream-dark">
@@ -111,7 +111,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       </div>
 
       {/* Basic info */}
-      <div className="rounded-lg bg-white p-6 shadow-sm">
+      <div className="card p-6">
         <h2 className="mb-4 text-lg font-medium text-text-dark">Informações Básicas</h2>
 
         <div className="space-y-4">
@@ -133,7 +133,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           <div>
             <label className="mb-1 block text-sm text-text-muted">Username</label>
             <div className="flex items-center">
-              <span className="rounded-l-lg border border-r-0 border-brown/20 bg-cream-dark px-3 py-2 text-text-muted">
+              <span className="rounded-l-lg border border-r-0 border-line bg-cream-dark px-3 py-2 text-text-muted">
                 @
               </span>
               <Input
@@ -159,7 +159,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               placeholder="Conte um pouco sobre você..."
               rows={3}
               maxLength={500}
-              className="w-full rounded-lg border border-brown/20 bg-cream px-3 py-2 text-sm text-text-dark placeholder:text-text-muted focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
+              className="w-full rounded-lg border border-line bg-cream px-3 py-2 text-sm text-text-dark placeholder:text-text-muted focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
             />
             <p className="mt-1 text-xs text-text-muted">{formData.bio.length}/500 caracteres</p>
           </div>
@@ -172,7 +172,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               placeholder="Uma citação que te inspira..."
               rows={2}
               maxLength={300}
-              className="w-full rounded-lg border border-brown/20 bg-cream px-3 py-2 text-sm text-text-dark placeholder:text-text-muted focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
+              className="w-full rounded-lg border border-line bg-cream px-3 py-2 text-sm text-text-dark placeholder:text-text-muted focus:border-green-deep focus:outline-none focus:ring-2 focus:ring-green-deep/20"
             />
             <p className="mt-1 text-xs text-text-muted">{formData.quote.length}/300 caracteres</p>
           </div>
@@ -180,7 +180,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       </div>
 
       {/* Social links */}
-      <div className="rounded-lg bg-white p-6 shadow-sm">
+      <div className="card p-6">
         <h2 className="mb-4 text-lg font-medium text-text-dark">Redes Sociais</h2>
 
         <div className="space-y-4">
@@ -190,7 +190,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               Instagram
             </label>
             <div className="flex items-center">
-              <span className="rounded-l-lg border border-r-0 border-brown/20 bg-cream-dark px-3 py-2 text-sm text-text-muted">
+              <span className="rounded-l-lg border border-r-0 border-line bg-cream-dark px-3 py-2 text-sm text-text-muted">
                 instagram.com/
               </span>
               <Input
@@ -209,7 +209,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               Reddit
             </label>
             <div className="flex items-center">
-              <span className="rounded-l-lg border border-r-0 border-brown/20 bg-cream-dark px-3 py-2 text-sm text-text-muted">
+              <span className="rounded-l-lg border border-r-0 border-line bg-cream-dark px-3 py-2 text-sm text-text-muted">
                 reddit.com/user/
               </span>
               <Input
@@ -228,7 +228,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               TikTok
             </label>
             <div className="flex items-center">
-              <span className="rounded-l-lg border border-r-0 border-brown/20 bg-cream-dark px-3 py-2 text-sm text-text-muted">
+              <span className="rounded-l-lg border border-r-0 border-line bg-cream-dark px-3 py-2 text-sm text-text-muted">
                 tiktok.com/@
               </span>
               <Input
@@ -244,7 +244,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       </div>
 
       {/* Music link */}
-      <div className="rounded-lg bg-white p-6 shadow-sm">
+      <div className="card p-6">
         <h2 className="mb-4 text-lg font-medium text-text-dark">Música</h2>
         <div>
           <label className="mb-1 block text-sm text-text-muted">

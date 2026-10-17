@@ -66,61 +66,56 @@ export function ReadingCalendar({ data, year }: ReadingCalendarProps) {
     return 'bg-green-deep'
   }
 
-  // Each week column is 12px wide + 3px gap = 15px
-  const CELL_SIZE = 12
   const GAP = 3
-  const STEP = CELL_SIZE + GAP
   const LABEL_WIDTH = 28
+  const columns = `repeat(${weeks.length}, minmax(0, 1fr))`
 
   return (
-    <div className="overflow-x-auto">
-      <div style={{ minWidth: `${LABEL_WIDTH + weeks.length * STEP}px` }}>
-        {/* Month labels row */}
-        <div className="relative mb-1" style={{ marginLeft: `${LABEL_WIDTH + GAP}px`, height: '16px' }}>
-          {MONTHS.map((month, i) => {
-            if (monthStartWeeks[i] === -1) return null
-            return (
-              <span
-                key={month}
-                className="absolute text-[11px] text-text-muted"
-                style={{ left: `${monthStartWeeks[i] * STEP}px` }}
-              >
-                {month}
-              </span>
-            )
-          })}
+    <div className="-mx-1 overflow-x-auto px-1 pb-1">
+      {/* largura mínima só no celular; no desktop as células crescem até preencher o card */}
+      <div className="min-w-[620px]">
+        {/* Meses */}
+        <div className="mb-1.5 flex" style={{ paddingLeft: LABEL_WIDTH }}>
+          <div className="grid flex-1" style={{ gridTemplateColumns: columns, columnGap: GAP }}>
+            {MONTHS.map((month, i) =>
+              monthStartWeeks[i] === -1 ? null : (
+                <span
+                  key={month}
+                  className="text-text-muted text-xs whitespace-nowrap"
+                  style={{ gridColumnStart: monthStartWeeks[i] + 1, gridRow: 1 }}
+                >
+                  {month}
+                </span>
+              )
+            )}
+          </div>
         </div>
 
-        {/* Grid area: weekday labels + cells */}
         <div className="flex">
-          {/* Weekday labels */}
-          <div className="flex flex-col" style={{ width: `${LABEL_WIDTH}px`, gap: `${GAP}px` }}>
+          {/* Dias da semana */}
+          <div className="grid shrink-0" style={{ width: LABEL_WIDTH, gridTemplateRows: 'repeat(7, minmax(0, 1fr))', rowGap: GAP }}>
             {WEEKDAYS.map((day, i) => (
-              <div
+              <span
                 key={day}
-                className="flex items-center text-[10px] text-text-muted"
-                style={{ height: `${CELL_SIZE}px`, visibility: i % 2 === 1 ? 'visible' : 'hidden' }}
+                className="text-text-muted flex items-center text-[11px]"
+                style={{ visibility: i % 2 === 1 ? 'visible' : 'hidden' }}
               >
                 {day}
-              </div>
+              </span>
             ))}
           </div>
 
-          {/* Calendar grid */}
-          <div className="flex" style={{ gap: `${GAP}px` }}>
+          {/* Grade */}
+          <div className="grid flex-1" style={{ gridTemplateColumns: columns, columnGap: GAP }}>
             {weeks.map((week, weekIndex) => (
-              <div key={weekIndex} className="flex flex-col" style={{ gap: `${GAP}px` }}>
+              <div key={weekIndex} className="grid min-w-0" style={{ rowGap: GAP, gridTemplateColumns: "minmax(0, 1fr)" }}>
                 {week.map((day, dayIndex) => (
                   <div
                     key={dayIndex}
-                    className={cn(
-                      'rounded-sm',
-                      getIntensityClass(day.value)
-                    )}
-                    style={{ width: `${CELL_SIZE}px`, height: `${CELL_SIZE}px` }}
+                    className={cn('aspect-square w-full rounded-[3px]', getIntensityClass(day.value))}
                     title={
                       day.value >= 0
-                        ? `${day.date.toLocaleDateString('pt-BR')}: ${day.value > 0 ? `${day.value} atividades` : 'Sem atividade'}`
+                        ? `${day.date.toLocaleDateString('pt-BR')}: ${day.value > 0 ? 'dia de leitura' : 'sem leitura'}`
                         : undefined
                     }
                   />
@@ -130,17 +125,17 @@ export function ReadingCalendar({ data, year }: ReadingCalendarProps) {
           </div>
         </div>
 
-        {/* Legend */}
+        {/* Legenda */}
         <div className="mt-4 flex items-center justify-end gap-2">
-          <span className="text-[11px] text-text-muted">Menos</span>
+          <span className="text-text-muted text-xs">Menos</span>
           <div className="flex gap-1">
-            <div className="h-3 w-3 rounded-sm bg-cream-dark" />
-            <div className="h-3 w-3 rounded-sm bg-green-accent/25" />
-            <div className="h-3 w-3 rounded-sm bg-green-light/40" />
-            <div className="h-3 w-3 rounded-sm bg-green-deep/60" />
-            <div className="h-3 w-3 rounded-sm bg-green-deep" />
+            <div className="bg-cream-dark h-3 w-3 rounded-[3px]" />
+            <div className="bg-green-accent/25 h-3 w-3 rounded-[3px]" />
+            <div className="bg-green-light/40 h-3 w-3 rounded-[3px]" />
+            <div className="bg-green-deep/60 h-3 w-3 rounded-[3px]" />
+            <div className="bg-green-deep h-3 w-3 rounded-[3px]" />
           </div>
-          <span className="text-[11px] text-text-muted">Mais</span>
+          <span className="text-text-muted text-xs">Mais</span>
         </div>
       </div>
     </div>
