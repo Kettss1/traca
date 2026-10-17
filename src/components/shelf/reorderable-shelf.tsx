@@ -60,7 +60,11 @@ export function ReorderableShelf({ books, onBookClick }: ReorderableShelfProps) 
     [items, width]
   )
   const rowStarts = useMemo(
-    () => rows.reduce<number[]>((starts, _row, i) => [...starts, i === 0 ? 0 : starts[i - 1] + rows[i - 1].length], []),
+    () =>
+      rows.reduce<number[]>(
+        (starts, _row, i) => [...starts, i === 0 ? 0 : starts[i - 1] + rows[i - 1].length],
+        []
+      ),
     [rows]
   )
 
@@ -136,7 +140,8 @@ export function ReorderableShelf({ books, onBookClick }: ReorderableShelfProps) 
               className="relative h-3.5"
               style={{
                 background: 'linear-gradient(180deg, #b8916a 0%, #9a7451 45%, #7c5b3e 100%)',
-                boxShadow: '0 6px 10px -2px rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.3)',
+                boxShadow:
+                  '0 6px 10px -2px rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.3)',
               }}
             />
           </div>
@@ -184,6 +189,7 @@ function ReorderableBook({
         colorPrimary={userBook.book.colorPrimary || undefined}
         colorSecondary={userBook.book.colorSecondary || undefined}
         pageCount={userBook.book.pageCount || undefined}
+        coverUrl={userBook.book.coverUrl}
         onClick={() => {
           if (!wasDragged.current) onClick()
         }}

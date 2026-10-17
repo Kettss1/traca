@@ -1,20 +1,36 @@
-import type { SpinePalette } from './spine-style'
-
-const TITLE_LINE = 11.5
+import {
+  SPINE_TITLE_INSET,
+  SPINE_TITLE_LINE,
+  fitSpineTitle,
+  spineTitleColumns,
+  type SpinePalette,
+} from './spine-style'
+import { SpineCover } from './spine-cover'
 
 interface SpineFaceProps {
   title: string
-  /** sobrenome já filtrado (curto o bastante para caber) */
-  author?: string
   width: number
+  height: number
   palette: SpinePalette
+  /** capa do livro; quando existe, vira a textura da lombada */
+  coverUrl?: string | null
 }
 
-/** Conteúdo visual da lombada — sem interação, usado na estante e na landing. */
-export function SpineFace({ title, author, width, palette }: SpineFaceProps) {
-  const showAuthor = !!author
+/** Conteúdo visual da lombada — sem interação, usado na estante, no perfil e na landing. */
+export function SpineFace({ title, width, height, palette, coverUrl }: SpineFaceProps) {
+  const columns = spineTitleColumns(width)
+  const fittedTitle = fitSpineTitle(title, width, height)
+  // sobre a capa desfocada o título precisa de sombra para continuar legível
+  const textShadow = coverUrl
+    ? palette.isLight
+      ? '0 0 3px rgb(255 255 255 / 0.85), 0 0 1px rgb(255 255 255 / 0.9)'
+      : '0 1px 3px rgb(0 0 0 / 0.8), 0 0 1px rgb(0 0 0 / 0.9)'
+    : undefined
+
   return (
     <>
+      {coverUrl && <SpineCover src={coverUrl} tint={palette.background} />}
+
       {/* volume: luz na borda esquerda, sombra na direita */}
       <span
         aria-hidden
@@ -25,44 +41,34 @@ export function SpineFace({ title, author, width, palette }: SpineFaceProps) {
         }}
       />
 
-      {/* faixas decorativas na cor secundária da capa */}
+      {/* faixas decorativas na cor secundária da capa, espelhadas em cima e embaixo */}
       <span aria-hidden className="absolute inset-x-0 top-2.5 h-[3px]" style={{ backgroundColor: palette.band }} />
       <span aria-hidden className="absolute inset-x-0 top-[17px] h-px opacity-70" style={{ backgroundColor: palette.band }} />
-      <span aria-hidden className="absolute inset-x-0 bottom-3 h-[3px]" style={{ backgroundColor: palette.band }} />
+      <span aria-hidden className="absolute inset-x-0 bottom-[17px] h-px opacity-70" style={{ backgroundColor: palette.band }} />
+      <span aria-hidden className="absolute inset-x-0 bottom-2.5 h-[3px]" style={{ backgroundColor: palette.band }} />
 
-      {/* título, de baixo para cima como nas lombadas brasileiras */}
+      {/* título centralizado na lombada, de baixo para cima como nas edições brasileiras */}
       <span
         aria-hidden
-        className="absolute inset-x-0 top-6 flex items-center justify-center overflow-hidden"
-        style={{ bottom: showAuthor ? 58 : 22 }}
+        className="absolute inset-x-0 flex items-center justify-center overflow-hidden"
+        style={{ top: SPINE_TITLE_INSET, bottom: SPINE_TITLE_INSET }}
       >
         <span
           className="font-fraunces overflow-hidden text-center text-[10.5px] font-semibold"
           style={{
             color: palette.text,
+            textShadow,
             writingMode: 'vertical-rl',
             transform: 'rotate(180deg)',
-            lineHeight: `${TITLE_LINE}px`,
-            // só cabem colunas inteiras: evita uma linha cortada pela metade
-            width: Math.max(1, Math.floor((width - 4) / TITLE_LINE)) * TITLE_LINE,
+            lineHeight: `${SPINE_TITLE_LINE}px`,
+            // só colunas inteiras: nunca uma linha cortada pela metade
+            width: columns * SPINE_TITLE_LINE,
             maxHeight: '100%',
           }}
         >
-          {title}
+          {fittedTitle}
         </span>
       </span>
-
-      {/* sobrenome do autor no pé da lombada */}
-      {showAuthor && (
-        <span aria-hidden className="absolute inset-x-0 bottom-[19px] flex h-9 items-center justify-center overflow-hidden">
-          <span
-            className="text-[8px] leading-none font-semibold tracking-wide whitespace-nowrap uppercase opacity-75"
-            style={{ color: palette.text, writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-          >
-            {author}
-          </span>
-        </span>
-      )}
     </>
   )
 }
